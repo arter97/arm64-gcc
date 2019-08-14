@@ -35,9 +35,7 @@ SECTIONS
       *(.rel.dtors)
       *(.rel.got)
       *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
-      PROVIDE_HIDDEN (__rel_iplt_start = .);
       *(.rel.iplt)
-      PROVIDE_HIDDEN (__rel_iplt_end = .);
     }
   .rela.dyn       :
     {
@@ -52,9 +50,7 @@ SECTIONS
       *(.rela.dtors)
       *(.rela.got)
       *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
-      PROVIDE_HIDDEN (__rela_iplt_start = .);
       *(.rela.iplt)
-      PROVIDE_HIDDEN (__rela_iplt_end = .);
     }
   .rel.plt        :
     {

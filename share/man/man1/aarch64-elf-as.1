@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "AS 1"
-.TH AS 1 "2019-05-21" "binutils-2.32" "GNU Development Tools"
+.TH AS 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -196,6 +196,9 @@ as [\fB\-a\fR[\fBcdghlns\fR][=\fIfile\fR]] [\fB\-\-alternate\fR] [\fB\-D\fR]
    [\fB\-mfdpic\fR]
    [\fB\-mno\-fdpic\fR]
    [\fB\-mnopic\fR]
+.PP
+\&\fITarget \s-1BPF\s0 options:\fR
+   [\fB\-EL\fR] [\fB\-EB\fR]
 .PP
 \&\fITarget \s-1CRIS\s0 options:\fR
    [\fB\-\-underscore\fR | \fB\-\-no\-underscore\fR]
@@ -813,6 +816,8 @@ on the target processor.  The following processor names are recognized:
 \&\f(CW\*(C`ares\*(C'\fR,
 \&\f(CW\*(C`exynos\-m1\*(C'\fR,
 \&\f(CW\*(C`falkor\*(C'\fR,
+\&\f(CW\*(C`neoverse\-n1\*(C'\fR,
+\&\f(CW\*(C`neoverse\-e1\*(C'\fR,
 \&\f(CW\*(C`qdf24xx\*(C'\fR,
 \&\f(CW\*(C`saphira\*(C'\fR,
 \&\f(CW\*(C`thunderx\*(C'\fR,
@@ -1037,6 +1042,22 @@ Assemble for the \s-1FDPIC ABI.\s0
 .PD
 Disable \-mfdpic.
 .PP
+The following options are available when as is configured for
+the Linux kernel \s-1BPF\s0 processor family.
+.PP
+\&\f(CW@chapter\fR \s-1BPF\s0 Dependent Features
+.SS "Options"
+.IX Subsection "Options"
+.IP "\fB\-EB\fR" 4
+.IX Item "-EB"
+This option specifies that the assembler should emit big-endian eBPF.
+.IP "\fB\-EL\fR" 4
+.IX Item "-EL"
+This option specifies that the assembler should emit little-endian
+eBPF.
+.PP
+Note that if no endianness option is specified in the command line,
+the host endianness is used.
 See the info pages for documentation of the CRIS-specific options.
 .PP
 The following options are available when as is configured for
@@ -1352,6 +1373,7 @@ accept various extension mnemonics.  For example,
 \&\f(CW\*(C`clwb\*(C'\fR,
 \&\f(CW\*(C`movdiri\*(C'\fR,
 \&\f(CW\*(C`movdir64b\*(C'\fR,
+\&\f(CW\*(C`enqcmd\*(C'\fR,
 \&\f(CW\*(C`avx512f\*(C'\fR,
 \&\f(CW\*(C`avx512cd\*(C'\fR,
 \&\f(CW\*(C`avx512er\*(C'\fR,
@@ -1367,6 +1389,7 @@ accept various extension mnemonics.  For example,
 \&\f(CW\*(C`avx512_vbmi2\*(C'\fR,
 \&\f(CW\*(C`avx512_vnni\*(C'\fR,
 \&\f(CW\*(C`avx512_bitalg\*(C'\fR,
+\&\f(CW\*(C`avx512_bf16\*(C'\fR,
 \&\f(CW\*(C`noavx512f\*(C'\fR,
 \&\f(CW\*(C`noavx512cd\*(C'\fR,
 \&\f(CW\*(C`noavx512er\*(C'\fR,
@@ -1382,6 +1405,9 @@ accept various extension mnemonics.  For example,
 \&\f(CW\*(C`noavx512_vbmi2\*(C'\fR,
 \&\f(CW\*(C`noavx512_vnni\*(C'\fR,
 \&\f(CW\*(C`noavx512_bitalg\*(C'\fR,
+\&\f(CW\*(C`noavx512_vp2intersect\*(C'\fR,
+\&\f(CW\*(C`noavx512_bf16\*(C'\fR,
+\&\f(CW\*(C`noenqcmd\*(C'\fR,
 \&\f(CW\*(C`vmx\*(C'\fR,
 \&\f(CW\*(C`vmfunc\*(C'\fR,
 \&\f(CW\*(C`smx\*(C'\fR,
@@ -1618,10 +1644,14 @@ Intel64 \s-1ISA\s0 in 64\-bit mode.  The default is to accept both.
 Optimize instruction encoding with smaller instruction size.  \fB\-O\fR
 and \fB\-O1\fR encode 64\-bit register load instructions with 64\-bit
 immediate as 32\-bit register load instructions with 31\-bit or 32\-bits
-immediates and encode 64\-bit register clearing instructions with 32\-bit
-register clearing instructions.  \fB\-O2\fR includes \fB\-O1\fR
-optimization plus encodes 256\-bit and 512\-bit vector register clearing
-instructions with 128\-bit vector register clearing instructions.
+immediates, encode 64\-bit register clearing instructions with 32\-bit
+register clearing instructions and encode 256\-bit/512\-bit \s-1VEX/EVEX\s0
+vector register clearing instructions with 128\-bit \s-1VEX\s0 vector register
+clearing instructions as well as encode 128\-bit/256\-bit \s-1EVEX\s0 vector
+register load/store instructions with \s-1VEX\s0 vector register load/store
+instructions.  \fB\-O2\fR includes \fB\-O1\fR optimization plus
+encodes 256\-bit/512\-bit \s-1EVEX\s0 vector register clearing instructions with
+128\-bit \s-1EVEX\s0 vector register clearing instructions.
 \&\fB\-Os\fR includes \fB\-O2\fR optimization plus encodes 16\-bit, 32\-bit
 and 64\-bit register tests with immediate as 8\-bit register test with
 immediate.  \fB\-O0\fR turns off this optimization.

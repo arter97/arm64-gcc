@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "OBJCOPY 1"
-.TH OBJCOPY 1 "2019-05-21" "binutils-2.32" "GNU Development Tools"
+.TH OBJCOPY 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -220,6 +220,7 @@ objcopy [\fB\-F\fR \fIbfdname\fR|\fB\-\-target=\fR\fIbfdname\fR]
         [\fB\-\-elf\-stt\-common=\fR\fIval\fR]
         [\fB\-\-merge\-notes\fR]
         [\fB\-\-no\-merge\-notes\fR]
+        [\fB\-\-verilog\-data\-width=\fR\fIval\fR]
         [\fB\-v\fR|\fB\-\-verbose\fR]
         [\fB\-V\fR|\fB\-\-version\fR]
         [\fB\-\-help\fR] [\fB\-\-info\fR]
@@ -1169,6 +1170,11 @@ For \s-1ELF\s0 files, attempt (or do not attempt) to reduce the size of any
 .IX Item "--version"
 .PD
 Show the version number of \fBobjcopy\fR.
+.IP "\fB\-\-verilog\-data\-width=\fR\fIbytes\fR" 4
+.IX Item "--verilog-data-width=bytes"
+For Verilog output, this options controls the number of bytes
+converted for each output data element.  The input target controls the
+endianness of the conversion.
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0

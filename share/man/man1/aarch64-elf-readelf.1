@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "READELF 1"
-.TH READELF 1 "2019-05-21" "binutils-2.32" "GNU Development Tools"
+.TH READELF 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -163,6 +163,10 @@ readelf [\fB\-a\fR|\fB\-\-all\fR]
          \fB\-\-debug\-dump\fR[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames\-interp,=str,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow\-links]]
         [\fB\-\-dwarf\-depth=\fR\fIn\fR]
         [\fB\-\-dwarf\-start=\fR\fIn\fR]
+        [\fB\-\-ctf=\fR\fIsection\fR]
+        [\fB\-\-ctf\-parent=\fR\fIsection\fR]
+        [\fB\-\-ctf\-symbols=\fR\fIsection\fR]
+        [\fB\-\-ctf\-strings=\fR\fIsection\fR]
         [\fB\-I\fR|\fB\-\-histogram\fR]
         [\fB\-v\fR|\fB\-\-version\fR]
         [\fB\-W\fR|\fB\-\-wide\fR]
@@ -469,8 +473,8 @@ output from this option can also be restricted by the use of the
 .IX Item "=links"
 .PD
 Displays the contents of the \fB.gnu_debuglink\fR and/or
-\&\fB.gnu_debugaltlink\fR sections.  Also displays the link to a
-separate dwarf object file (dwo), if one is specified by the 
+\&\fB.gnu_debugaltlink\fR sections.  Also displays any links to
+separate dwarf object files (dwo), if they are specified by the 
 DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
 \&\fB.debug_info\fR section.
 .ie n .IP """K""" 4
@@ -482,10 +486,9 @@ DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
 .IX Item "=follow-links"
 .PD
 Display the contents of any selected debug sections that are found in
-a linked, separate debug info file.  This can result in multiple
-versions of the same debug section being displayed if both the main
-file and the separate debug info file contain sections with the same
-name.
+linked, separate debug info file(s).  This can result in multiple
+versions of the same debug section being displayed if it exists in
+more than one file.
 .Sp
 In addition, when displaying \s-1DWARF\s0 attributes, if a form is found that
 references the separate debug info file, then the referenced contents
@@ -631,6 +634,25 @@ information and all DIEs before the \s-1DIE\s0 numbered \fIn\fR.  Only
 siblings and children of the specified \s-1DIE\s0 will be printed.
 .Sp
 This can be used in conjunction with \fB\-\-dwarf\-depth\fR.
+.IP "\fB\-\-ctf=\fR\fIsection\fR" 4
+.IX Item "--ctf=section"
+Display the contents of the specified \s-1CTF\s0 section.  \s-1CTF\s0 sections themselves
+contain many subsections, all of which are displayed in order.
+.IP "\fB\-\-ctf\-parent=\fR\fIsection\fR" 4
+.IX Item "--ctf-parent=section"
+Specify the name of another section from which the \s-1CTF\s0 file can inherit
+types.
+.IP "\fB\-\-ctf\-symbols=\fR\fIsection\fR" 4
+.IX Item "--ctf-symbols=section"
+.PD 0
+.IP "\fB\-\-ctf\-strings=\fR\fIsection\fR" 4
+.IX Item "--ctf-strings=section"
+.PD
+Specify the name of another section from which the \s-1CTF\s0 file can inherit
+strings and symbols.
+.Sp
+If either of \fB\-\-ctf\-symbols\fR or \fB\-\-ctf\-strings\fR is specified, the
+other must be specified as well.
 .IP "\fB\-I\fR" 4
 .IX Item "-I"
 .PD 0

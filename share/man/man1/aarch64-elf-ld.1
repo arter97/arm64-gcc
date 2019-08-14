@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "LD 1"
-.TH LD 1 "2019-05-21" "binutils-2.32" "GNU Development Tools"
+.TH LD 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -447,7 +447,7 @@ first check whether there is a definition in the shared object
 in the filter object.  The shared object \fIname\fR need not exist.
 Thus the shared object \fIname\fR may be used to provide an alternative
 implementation of certain functions, perhaps for debugging or for
-machine specific performance.
+machine-specific performance.
 .Sp
 This option may be specified more than once.  The \s-1DT_AUXILIARY\s0 entries
 will be created in the order in which they appear on the command line.
@@ -636,30 +636,38 @@ option is used:
 See \fBExpressions\fR for more information about expressions in linker
 scripts.
 .IP "\(bu" 4
-*<How \s-1GNU\s0 properties are merged.>
+How \s-1GNU\s0 properties are merged.
 .Sp
-When linker merges input .note.gnu.property sections into one output
-\&.note.gnu.property section, some properties are removed or updated,
-which are reported in the link map as
+When the linker merges input .note.gnu.property sections into one output
+\&.note.gnu.property section, some properties are removed or updated.
+These actions are reported in the link map.  For example:
 .Sp
 .Vb 1
 \&        Removed property 0xc0000002 to merge foo.o (0x1) and bar.o (not found)
 .Ve
 .Sp
-It indicates that property 0xc0000002 is removed from output when
+This indicates that property 0xc0000002 is removed from output when
 merging properties in  \fIfoo.o\fR, whose property 0xc0000002 value
 is 0x1, and \fIbar.o\fR, which doesn't have property 0xc0000002.
 .Sp
 .Vb 1
-\&        Updated property 0xc0000002 (0x1) to merge foo.o (0x1) and bar.o (0x1)
+\&        Updated property 0xc0010001 (0x1) to merge foo.o (0x1) and bar.o (0x1)
 .Ve
 .Sp
-It indicates that property 0xc0010001 value is updated to 0x1 in output
+This indicates that property 0xc0010001 value is updated to 0x1 in output
 when merging properties in  \fIfoo.o\fR, whose 0xc0010001 property value
 is 0x1, and \fIbar.o\fR, whose 0xc0010001 property value is 0x1.
 .RE
 .RS 4
 .RE
+.IP "\fB\-\-print\-map\-discarded\fR" 4
+.IX Item "--print-map-discarded"
+.PD 0
+.IP "\fB\-\-no\-print\-map\-discarded\fR" 4
+.IX Item "--no-print-map-discarded"
+.PD
+Print (or do not print) the list of discarded and garbage collected sections
+in the link map.  Enabled by default.
 .IP "\fB\-n\fR" 4
 .IX Item "-n"
 .PD 0
@@ -717,7 +725,7 @@ Note that the location of the compiler originated plugins is different
 from the place where the \fBar\fR, \fBnm\fR and
 \&\fBranlib\fR programs search for their plugins.  In order for
 those commands to make use of a compiler based plugin it must first be
-copied into the \fI${libdir}/bfd\-plugins\fR directory.  All gcc
+copied into the \fI${bindir}/../lib/bfd\-plugins\fR directory.  All gcc
 based linker plugins are backward compatible, so it is sufficient to
 just copy in the newest one.
 .IP "\fB\-\-push\-state\fR" 4
@@ -1000,6 +1008,25 @@ to a locally defined function, foo, via its \s-1GOT\s0 slot.
 \&\fBcall\-nop=prefix\-\fR\fIbyte\fR generates \f(CW\*(C`\f(CIbyte\f(CW call foo\*(C'\fR.
 \&\fBcall\-nop=suffix\-\fR\fIbyte\fR generates \f(CW\*(C`call foo \f(CIbyte\f(CW\*(C'\fR.
 Supported for i386 and x86_64.
+.IP "\fBcet\-report=none\fR" 4
+.IX Item "cet-report=none"
+.PD 0
+.IP "\fBcet\-report=warning\fR" 4
+.IX Item "cet-report=warning"
+.IP "\fBcet\-report=error\fR" 4
+.IX Item "cet-report=error"
+.PD
+Specify how to report the missing \s-1GNU_PROPERTY_X86_FEATURE_1_IBT\s0 and
+\&\s-1GNU_PROPERTY_X86_FEATURE_1_SHSTK\s0 properties in input .note.gnu.property
+section.  \fBcet\-report=none\fR, which is the default, will make the
+linker not report missing properties in input files.
+\&\fBcet\-report=warning\fR will make the linker issue a warning for
+missing properties in input files.  \fBcet\-report=error\fR will make
+the linker issue an error for missing properties in input files.
+Note that \fBibt\fR will turn off the missing
+\&\s-1GNU_PROPERTY_X86_FEATURE_1_IBT\s0 property report and \fBshstk\fR will
+turn off the missing \s-1GNU_PROPERTY_X86_FEATURE_1_SHSTK\s0 property report.
+Supported for Linux/i386 and Linux/x86_64.
 .IP "\fBcombreloc\fR" 4
 .IX Item "combreloc"
 .PD 0
@@ -1202,7 +1229,7 @@ the order that it is specified on the command line.  If a symbol in that
 archive is needed to resolve an undefined symbol referred to by an
 object in an archive that appears later on the command line, the linker
 would not be able to resolve that reference.  By grouping the archives,
-they all be searched repeatedly until all possible references are
+they will all be searched repeatedly until all possible references are
 resolved.
 .Sp
 Using this option has a significant performance cost.  It is best to use
@@ -1455,7 +1482,7 @@ entry point code that is capable of processing these relocations.
 .IP "\fB\-\-embedded\-relocs\fR" 4
 .IX Item "--embedded-relocs"
 This option is similar to the \fB\-\-emit\-relocs\fR option except
-that the relocs are stored in a target specific section.  This option
+that the relocs are stored in a target-specific section.  This option
 is only supported by the \fB\s-1BFIN\s0\fR, \fB\s-1CR16\s0\fR and \fIM68K\fR
 targets.
 .IP "\fB\-\-disable\-multiple\-abs\-defs\fR" 4
@@ -1554,7 +1581,7 @@ parsable by tools.  Here is an example of an output:
 Print a summary of the command-line options on the standard output and exit.
 .IP "\fB\-\-target\-help\fR" 4
 .IX Item "--target-help"
-Print a summary of all target specific options on the standard output and exit.
+Print a summary of all target-specific options on the standard output and exit.
 .IP "\fB\-Map=\fR\fImapfile\fR" 4
 .IX Item "-Map=mapfile"
 Print a link map to the file \fImapfile\fR.  See the description of the
@@ -1713,7 +1740,7 @@ This option is ignored for \s-1SVR4\s0 compatibility.
 An option with machine dependent effects.
 This option is only supported on a few targets.
 .Sp
-On some platforms the \fB\-\-relax\fR option performs target specific,
+On some platforms the \fB\-\-relax\fR option performs target-specific,
 global optimizations that become possible when the linker resolves
 addressing in the program, such as relaxing address modes,
 synthesizing new instructions, selecting shorter version of current
@@ -1748,12 +1775,17 @@ line.  It overrides \fB\-s\fR and \fB\-S\fR.
 Add a directory to the runtime library search path.  This is used when
 linking an \s-1ELF\s0 executable with shared objects.  All \fB\-rpath\fR
 arguments are concatenated and passed to the runtime linker, which uses
-them to locate shared objects at runtime.  The \fB\-rpath\fR option is
-also used when locating shared objects which are needed by shared
-objects explicitly included in the link; see the description of the
-\&\fB\-rpath\-link\fR option.  If \fB\-rpath\fR is not used when linking an
-\&\s-1ELF\s0 executable, the contents of the environment variable
-\&\f(CW\*(C`LD_RUN_PATH\*(C'\fR will be used if it is defined.
+them to locate shared objects at runtime.
+.Sp
+The \fB\-rpath\fR option is also used when locating shared objects which
+are needed by shared objects explicitly included in the link; see the
+description of the \fB\-rpath\-link\fR option.  Searching \fB\-rpath\fR
+in this way is only supported by native linkers and cross linkers which
+have been configured with the \fB\-\-with\-sysroot\fR option.
+.Sp
+If \fB\-rpath\fR is not used when linking an \s-1ELF\s0 executable, the
+contents of the environment variable \f(CW\*(C`LD_RUN_PATH\*(C'\fR will be used if it
+is defined.
 .Sp
 The \fB\-rpath\fR option may also be used on SunOS.  By default, on
 SunOS, the linker will form a runtime search path out of all the
@@ -2852,6 +2884,14 @@ equivalent \f(CW\*(C`JALX\*(C'\fR instructions as the associated relocation is
 calculated.  By default or if \fB\-\-no\-ignore\-branch\-isa\fR is used
 a check is made causing the loss of an \s-1ISA\s0 mode transition to produce
 an error.
+.IP "\fB\-\-compact\-branches\fR" 4
+.IX Item "--compact-branches"
+.PD 0
+.IP "\fB\-\-compact\-branches\fR" 4
+.IX Item "--compact-branches"
+.PD
+These options control the generation of compact instructions by the linker
+in the \s-1PLT\s0 entries for \s-1MIPS R6.\s0
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
 You can change the behaviour of \fBld\fR with the environment variables

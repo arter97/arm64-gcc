@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "OBJDUMP 1"
-.TH OBJDUMP 1 "2019-05-21" "binutils-2.32" "GNU Development Tools"
+.TH OBJDUMP 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -164,6 +164,7 @@ objdump [\fB\-a\fR|\fB\-\-archive\-headers\fR]
         [\fB\-s\fR|\fB\-\-full\-contents\fR]
         [\fB\-W[lLiaprmfFsoRtUuTgAckK]\fR|
          \fB\-\-dwarf\fR[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames\-interp,=str,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow\-links]]
+        [\fB\-\-ctf=\fR\fIsection\fR]
         [\fB\-G\fR|\fB\-\-stabs\fR]
         [\fB\-t\fR|\fB\-\-syms\fR]
         [\fB\-T\fR|\fB\-\-dynamic\-syms\fR]
@@ -176,6 +177,9 @@ objdump [\fB\-a\fR|\fB\-\-archive\-headers\fR]
         [\fB\-\-adjust\-vma=\fR\fIoffset\fR]
         [\fB\-\-dwarf\-depth=\fR\fIn\fR]
         [\fB\-\-dwarf\-start=\fR\fIn\fR]
+        [\fB\-\-ctf\-parent=\fR\fIsection\fR]
+        [\fB\-\-ctf\-symbols=\fR\fIsection\fR]
+        [\fB\-\-ctf\-strings=\fR\fIsection\fR]
         [\fB\-\-no\-recurse\-limit\fR|\fB\-\-recurse\-limit\fR]
         [\fB\-\-special\-syms\fR]
         [\fB\-\-prefix=\fR\fIprefix\fR]
@@ -304,6 +308,10 @@ argument is given, then display the assembler mnemonics starting at
 will stop at the end of the function, otherwise it will stop when the
 next symbol is encountered.  If there are no matches for \fIsymbol\fR
 then nothing will be displayed.
+.Sp
+Note if the \fB\-\-dwarf=follow\-links\fR option has also been enabled
+then any symbol tables in linked debug info files will be read in and
+used when disassembling.
 .IP "\fB\-D\fR" 4
 .IX Item "-D"
 .PD 0
@@ -325,6 +333,10 @@ is stored in code sections.
 If the target is an \s-1ARM\s0 architecture this switch also has the effect
 of forcing the disassembler to decode pieces of data found in code
 sections as if they were instructions.
+.Sp
+Note if the \fB\-\-dwarf=follow\-links\fR option has also been enabled
+then any symbol tables in linked debug info files will be read in and
+used when disassembling.
 .IP "\fB\-\-prefix\-addresses\fR" 4
 .IX Item "--prefix-addresses"
 When disassembling, print the complete address on each line.  This is
@@ -880,8 +892,8 @@ output from this option can also be restricted by the use of the
 .IX Item "=links"
 .PD
 Displays the contents of the \fB.gnu_debuglink\fR and/or
-\&\fB.gnu_debugaltlink\fR sections.  Also displays the link to a
-separate dwarf object file (dwo), if one is specified by the 
+\&\fB.gnu_debugaltlink\fR sections.  Also displays any links to
+separate dwarf object files (dwo), if they are specified by the 
 DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
 \&\fB.debug_info\fR section.
 .ie n .IP """K""" 4
@@ -893,10 +905,9 @@ DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
 .IX Item "=follow-links"
 .PD
 Display the contents of any selected debug sections that are found in
-a linked, separate debug info file.  This can result in multiple
-versions of the same debug section being displayed if both the main
-file and the separate debug info file contain sections with the same
-name.
+linked, separate debug info file(s).  This can result in multiple
+versions of the same debug section being displayed if it exists in
+more than one file.
 .Sp
 In addition, when displaying \s-1DWARF\s0 attributes, if a form is found that
 references the separate debug info file, then the referenced contents
@@ -1045,6 +1056,14 @@ This can be used in conjunction with \fB\-\-dwarf\-depth\fR.
 .IP "\fB\-\-dwarf\-check\fR" 4
 .IX Item "--dwarf-check"
 Enable additional checks for consistency of Dwarf information.
+.IP "\fB\-\-ctf=\fR\fIsection\fR" 4
+.IX Item "--ctf=section"
+Display the contents of the specified \s-1CTF\s0 section.  \s-1CTF\s0 sections themselves
+contain many subsections, all of which are displayed in order.
+.IP "\fB\-\-ctf\-parent=\fR\fIsection\fR" 4
+.IX Item "--ctf-parent=section"
+Specify the name of another section from which the \s-1CTF\s0 file can inherit
+types.
 .IP "\fB\-G\fR" 4
 .IX Item "-G"
 .PD 0

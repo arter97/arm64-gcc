@@ -682,6 +682,12 @@ The following annotations report thread related changes of state.
      the user with the 'thread' command, or as a result of execution,
      e.g., another thread hits a breakpoint.
 
+'^Z^Zthread-exited,id="ID",group-id="GID"'
+
+     This annotation is issued once for each thread that exits.  The ID
+     field contains the global GDB identifier of the thread.  The GID
+     field identifies the thread group this thread belongs to.
+
 
 File: annotate.info,  Node: GNU Free Documentation License,  Prev: Multi-threaded Apps,  Up: Top
 
@@ -1182,6 +1188,6 @@ Node: Invalidation19467
 Node: Annotations for Running19948
 Node: Source Annotations21461
 Node: Multi-threaded Apps22407
-Node: GNU Free Documentation License23017
+Node: GNU Free Documentation License23267
 
 End Tag Table

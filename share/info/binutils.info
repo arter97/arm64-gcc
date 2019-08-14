@@ -42,7 +42,7 @@ Introduction
 ************
 
 This brief manual contains documentation for the GNU binary utilities
-(GNU Binutils) version 2.32:
+(Linux/GNU Binutils) version 2.32.51.0.1:
 
    This document is distributed under the terms of the GNU Free
 Documentation License version 1.3.  A copy of the license is included in
@@ -332,7 +332,7 @@ to specify variations on an operation's behavior:
 'P'
      Use the full path name when matching names in the archive.  GNU
      'ar' can not create an archive with a full path name (such archives
-     are not POSIX complaint), but other archive creators can.  This
+     are not POSIX compliant), but other archive creators can.  This
      option will cause GNU 'ar' to match file names using a complete
      path name, which can be convenient when extracting a single file
      from an archive created by another tool.
@@ -990,6 +990,7 @@ File: binutils.info,  Node: objcopy,  Next: objdump,  Prev: nm,  Up: Top
              [--elf-stt-common=VAL]
              [--merge-notes]
              [--no-merge-notes]
+             [--verilog-data-width=VAL]
              [-v|--verbose]
              [-V|--version]
              [--help] [--info]
@@ -1777,6 +1778,11 @@ the '--reverse-bytes' option.)
 '--version'
      Show the version number of 'objcopy'.
 
+'--verilog-data-width=BYTES'
+     For Verilog output, this options controls the number of bytes
+     converted for each output data element.  The input target controls
+     the endianness of the conversion.
+
 '-v'
 '--verbose'
      Verbose output: list all object files modified.  In the case of
@@ -1821,6 +1827,7 @@ File: binutils.info,  Node: objdump,  Next: ranlib,  Prev: objcopy,  Up: Top
              [-s|--full-contents]
              [-W[lLiaprmfFsoRtUuTgAckK]|
               --dwarf[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]]
+             [--ctf=SECTION]
              [-G|--stabs]
              [-t|--syms]
              [-T|--dynamic-syms]
@@ -1833,6 +1840,9 @@ File: binutils.info,  Node: objdump,  Next: ranlib,  Prev: objcopy,  Up: Top
              [--adjust-vma=OFFSET]
              [--dwarf-depth=N]
              [--dwarf-start=N]
+             [--ctf-parent=SECTION]
+             [--ctf-symbols=SECTION]
+             [--ctf-strings=SECTION]
              [--no-recurse-limit|--recurse-limit]
              [--special-syms]
              [--prefix=PREFIX]
@@ -1937,6 +1947,10 @@ given.
      symbol is encountered.  If there are no matches for SYMBOL then
      nothing will be displayed.
 
+     Note if the '--dwarf=follow-links' option has also been enabled
+     then any symbol tables in linked debug info files will be read in
+     and used when disassembling.
+
 '-D'
 '--disassemble-all'
      Like '-d', but disassemble the contents of all sections, not just
@@ -1954,6 +1968,10 @@ given.
      If the target is an ARM architecture this switch also has the
      effect of forcing the disassembler to decode pieces of data found
      in code sections as if they were instructions.
+
+     Note if the '--dwarf=follow-links' option has also been enabled
+     then any symbol tables in linked debug info files will be read in
+     and used when disassembling.
 
 '--prefix-addresses'
      When disassembling, print the complete address on each line.  This
@@ -2332,18 +2350,17 @@ given.
      'k'
      '=links'
           Displays the contents of the '.gnu_debuglink' and/or
-          '.gnu_debugaltlink' sections.  Also displays the link to a
-          separate dwarf object file (dwo), if one is specified by the
-          DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
+          '.gnu_debugaltlink' sections.  Also displays any links to
+          separate dwarf object files (dwo), if they are specified by
+          the DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
           '.debug_info' section.
 
      'K'
      '=follow-links'
           Display the contents of any selected debug sections that are
-          found in a linked, separate debug info file.  This can result
+          found in linked, separate debug info file(s).  This can result
           in multiple versions of the same debug section being displayed
-          if both the main file and the separate debug info file contain
-          sections with the same name.
+          if it exists in more than one file.
 
           In addition, when displaying DWARF attributes, if a form is
           found that references the separate debug info file, then the
@@ -2429,6 +2446,17 @@ given.
 
 '--dwarf-check'
      Enable additional checks for consistency of Dwarf information.
+
+'--ctf=SECTION'
+
+     Display the contents of the specified CTF section.  CTF sections
+     themselves contain many subsections, all of which are displayed in
+     order.
+
+'--ctf-parent=SECTION'
+
+     Specify the name of another section from which the CTF file can
+     inherit types.
 
 '-G'
 '--stabs'
@@ -2627,7 +2655,7 @@ File: binutils.info,  Node: size,  Next: strings,  Prev: ranlib,  Up: Top
 6 size
 ******
 
-     size [-A|-B|--format=COMPATIBILITY]
+     size [-A|-B|-G|--format=COMPATIBILITY]
           [--help]
           [-d|-o|-x|--radix=NUMBER]
           [--common]
@@ -2647,19 +2675,38 @@ specified, the file 'a.out' will be used.
 
 '-A'
 '-B'
+'-G'
 '--format=COMPATIBILITY'
      Using one of these options, you can choose whether the output from
      GNU 'size' resembles output from System V 'size' (using '-A', or
      '--format=sysv'), or Berkeley 'size' (using '-B', or
      '--format=berkeley').  The default is the one-line format similar
-     to Berkeley's.
+     to Berkeley's.  Alternatively, you can choose the GNU format output
+     (using '-G', or '--format=gnu'), this is similar to Berkeley's
+     output format, but sizes are counted differently.
 
      Here is an example of the Berkeley (default) format of output from
      'size':
           $ size --format=Berkeley ranlib size
-          text    data    bss     dec     hex     filename
-          294880  81920   11592   388392  5ed28   ranlib
-          294880  81920   11888   388688  5ee50   size
+             text    data     bss     dec     hex filename
+           294880   81920   11592  388392   5ed28 ranlib
+           294880   81920   11888  388688   5ee50 size
+
+     The Berkeley style output counts read only data in the 'text'
+     column, not in the 'data' column, the 'dec' and 'hex' columns both
+     display the sum of the 'text', 'data', and 'bss' columns in decimal
+     and hexadecimal respectively.
+
+     The GNU format counts read only data in the 'data' column, not the
+     'text' column, and only displays the sum of the 'text', 'data', and
+     'bss' columns once, in the 'total' column.  The '--radix' option
+     can be used to change the number base for all columns.  Here is the
+     same data displayed with GNU conventions:
+
+          $ size --format=GNU ranlib size
+                text       data        bss      total filename
+              279880      96920      11592     388392 ranlib
+              279880      96920      11888     388688 size
 
      This is the same data, but displayed closer to System V
      conventions:
@@ -2697,11 +2744,11 @@ specified, the file 'a.out' will be used.
 
 '--common'
      Print total size of common symbols in each file.  When using
-     Berkeley format these are included in the bss size.
+     Berkeley or GNU format these are included in the bss size.
 
 '-t'
 '--totals'
-     Show totals of all objects listed (Berkeley format listing mode
+     Show totals of all objects listed (Berkeley or GNU format mode
      only).
 
 '--target=BFDNAME'
@@ -2960,7 +3007,8 @@ modified copies under different names.
 '--no-merge-notes'
      For ELF files, attempt (or do not attempt) to reduce the size of
      any SHT_NOTE type sections by removing duplicate notes.  The
-     default is to attempt this reduction.
+     default is to attempt this reduction unless stripping debug or DWO
+     information.
 
 '-N SYMBOLNAME'
 '--strip-symbol=SYMBOLNAME'
@@ -4106,6 +4154,10 @@ File: binutils.info,  Node: readelf,  Next: elfedit,  Prev: dlltool,  Up: Top
               --debug-dump[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]]
              [--dwarf-depth=N]
              [--dwarf-start=N]
+             [--ctf=SECTION]
+             [--ctf-parent=SECTION]
+             [--ctf-symbols=SECTION]
+             [--ctf-strings=SECTION]
              [-I|--histogram]
              [-v|--version]
              [-W|--wide]
@@ -4303,18 +4355,17 @@ equivalent.  At least one option besides '-v' or '-H' must be given.
      'k'
      '=links'
           Displays the contents of the '.gnu_debuglink' and/or
-          '.gnu_debugaltlink' sections.  Also displays the link to a
-          separate dwarf object file (dwo), if one is specified by the
-          DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
+          '.gnu_debugaltlink' sections.  Also displays any links to
+          separate dwarf object files (dwo), if they are specified by
+          the DW_AT_GNU_dwo_name or DW_AT_dwo_name attributes in the
           '.debug_info' section.
 
      'K'
      '=follow-links'
           Display the contents of any selected debug sections that are
-          found in a linked, separate debug info file.  This can result
+          found in linked, separate debug info file(s).  This can result
           in multiple versions of the same debug section being displayed
-          if both the main file and the separate debug info file contain
-          sections with the same name.
+          if it exists in more than one file.
 
           In addition, when displaying DWARF attributes, if a form is
           found that references the separate debug info file, then the
@@ -4397,6 +4448,24 @@ equivalent.  At least one option besides '-v' or '-H' must be given.
      and children of the specified DIE will be printed.
 
      This can be used in conjunction with '--dwarf-depth'.
+
+'--ctf=SECTION'
+
+     Display the contents of the specified CTF section.  CTF sections
+     themselves contain many subsections, all of which are displayed in
+     order.
+
+'--ctf-parent=SECTION'
+
+     Specify the name of another section from which the CTF file can
+     inherit types.
+'--ctf-symbols=SECTION'
+'--ctf-strings=SECTION'
+     Specify the name of another section from which the CTF file can
+     inherit strings and symbols.
+
+     If either of '--ctf-symbols' or '--ctf-strings' is specified, the
+     other must be specified as well.
 
 '-I'
 '--histogram'
@@ -4724,7 +4793,8 @@ recommend you contact that organization first.
 individuals in the file 'etc/SERVICE' in the GNU Emacs distribution.
 
    In any event, we also recommend that you send bug reports for the
-binary utilities to <http://www.sourceware.org/bugzilla/>.
+binary utilities to <http://www.sourceware.org/bugzilla/ and
+mailto:hjl.tools@gmail.com>.
 
    The fundamental principle of reporting bugs usefully is this: *report
 all the facts*.  If you are not sure whether to state a fact or leave it
@@ -5351,24 +5421,24 @@ Binutils Index
 
 * -enable-deterministic-archives:        ar cmdline.          (line 145)
 * -enable-deterministic-archives <1>:    ar cmdline.          (line 222)
-* -enable-deterministic-archives <2>:    objcopy.             (line 348)
-* -enable-deterministic-archives <3>:    objcopy.             (line 358)
+* -enable-deterministic-archives <2>:    objcopy.             (line 349)
+* -enable-deterministic-archives <3>:    objcopy.             (line 359)
 * -enable-deterministic-archives <4>:    ranlib.              (line  32)
 * -enable-deterministic-archives <5>:    ranlib.              (line  44)
-* -enable-deterministic-archives <6>:    strip.               (line 149)
-* -enable-deterministic-archives <7>:    strip.               (line 159)
-* .stab:                                 objdump.             (line 643)
-* Add prefix to absolute paths:          objdump.             (line 478)
+* -enable-deterministic-archives <6>:    strip.               (line 150)
+* -enable-deterministic-archives <7>:    strip.               (line 160)
+* .stab:                                 objdump.             (line 665)
+* Add prefix to absolute paths:          objdump.             (line 490)
 * addr2line:                             addr2line.           (line   6)
 * address to file name and line number:  addr2line.           (line   6)
-* all header information, object file:   objdump.             (line 765)
+* all header information, object file:   objdump.             (line 787)
 * ar:                                    ar.                  (line   6)
 * ar compatibility:                      ar.                  (line  60)
-* architecture:                          objdump.             (line 238)
-* architectures available:               objdump.             (line 223)
+* architecture:                          objdump.             (line 250)
+* architectures available:               objdump.             (line 235)
 * archive contents:                      ranlib.              (line   6)
-* Archive file symbol index information: readelf.             (line 179)
-* archive headers:                       objdump.             (line  70)
+* Archive file symbol index information: readelf.             (line 183)
+* archive headers:                       objdump.             (line  74)
 * archives:                              ar.                  (line   6)
 * base files:                            dlltool.             (line 124)
 * bug criteria:                          Bug Criteria.        (line   6)
@@ -5376,60 +5446,64 @@ Binutils Index
 * bugs:                                  Reporting Bugs.      (line   6)
 * bugs, reporting:                       Bug Reporting.       (line   6)
 * c++filt:                               c++filt.             (line   6)
-* changing object addresses:             objcopy.             (line 393)
-* changing section address:              objcopy.             (line 403)
-* changing section LMA:                  objcopy.             (line 412)
-* changing section VMA:                  objcopy.             (line 425)
-* changing start address:                objcopy.             (line 388)
+* changing object addresses:             objcopy.             (line 394)
+* changing section address:              objcopy.             (line 404)
+* changing section LMA:                  objcopy.             (line 413)
+* changing section VMA:                  objcopy.             (line 426)
+* changing start address:                objcopy.             (line 389)
 * collections of files:                  ar.                  (line   6)
+* Compact Type Format:                   objdump.             (line 653)
+* Compact Type Format <1>:               readelf.             (line 327)
 * compatibility, ar:                     ar.                  (line  60)
 * contents of archive:                   ar cmdline.          (line  97)
 * crash:                                 Bug Criteria.        (line   9)
 * creating archives:                     ar cmdline.          (line 139)
 * creating thin archive:                 ar cmdline.          (line 208)
+* CTF:                                   objdump.             (line 653)
+* CTF <1>:                               readelf.             (line 327)
 * cxxfilt:                               c++filt.             (line  16)
 * dates in archive:                      ar cmdline.          (line 178)
-* debug symbols:                         objdump.             (line 643)
+* debug symbols:                         objdump.             (line 665)
 * debugging symbols:                     nm.                  (line 150)
 * deleting from archive:                 ar cmdline.          (line  26)
 * demangling C++ symbols:                c++filt.             (line   6)
 * demangling in nm:                      nm.                  (line 158)
-* demangling in objdump:                 objdump.             (line  98)
+* demangling in objdump:                 objdump.             (line 102)
 * demangling in objdump <1>:             addr2line.           (line  86)
 * deterministic archives:                ar cmdline.          (line 145)
 * deterministic archives <1>:            ar cmdline.          (line 222)
-* deterministic archives <2>:            objcopy.             (line 348)
-* deterministic archives <3>:            objcopy.             (line 358)
+* deterministic archives <2>:            objcopy.             (line 349)
+* deterministic archives <3>:            objcopy.             (line 359)
 * deterministic archives <4>:            ranlib.              (line  32)
 * deterministic archives <5>:            ranlib.              (line  44)
-* deterministic archives <6>:            strip.               (line 149)
-* deterministic archives <7>:            strip.               (line 159)
-* disassembling object code:             objdump.             (line 139)
-* disassembly architecture:              objdump.             (line 238)
-* disassembly endianness:                objdump.             (line 173)
-* disassembly, with source:              objdump.             (line 474)
+* deterministic archives <6>:            strip.               (line 150)
+* deterministic archives <7>:            strip.               (line 160)
+* disassembling object code:             objdump.             (line 143)
+* disassembly architecture:              objdump.             (line 250)
+* disassembly endianness:                objdump.             (line 185)
+* disassembly, with source:              objdump.             (line 486)
 * discarding symbols:                    strip.               (line   6)
 * DLL:                                   dlltool.             (line   6)
 * dlltool:                               dlltool.             (line   6)
-* dynamic relocation entries, in object file: objdump.        (line 462)
-* dynamic symbol table entries, printing: objdump.            (line 742)
+* dynamic relocation entries, in object file: objdump.        (line 474)
+* dynamic symbol table entries, printing: objdump.            (line 764)
 * dynamic symbols:                       nm.                  (line 188)
-* ELF dynamic section information:       readelf.             (line 128)
-* ELF dynamic symbol table information:  readelf.             (line 100)
-* ELF file header information:           readelf.             (line  63)
+* ELF dynamic section information:       readelf.             (line 132)
+* ELF dynamic symbol table information:  readelf.             (line 104)
+* ELF file header information:           readelf.             (line  67)
 * ELF file information:                  readelf.             (line   6)
-* ELF notes:                             readelf.             (line 110)
-* ELF object file format:                objdump.             (line 643)
-* ELF program header information:        readelf.             (line  69)
-* ELF reloc information:                 readelf.             (line 114)
-* ELF section group information:         readelf.             (line  80)
-* ELF section information:               readelf.             (line  75)
-* ELF section information <1>:           readelf.             (line  85)
-* ELF segment information:               readelf.             (line  69)
-* ELF symbol table information:          readelf.             (line  90)
-* ELF version sections information:      readelf.             (line 132)
+* ELF notes:                             readelf.             (line 114)
+* ELF object file format:                objdump.             (line 665)
+* ELF program header information:        readelf.             (line  73)
+* ELF reloc information:                 readelf.             (line 118)
+* ELF section group information:         readelf.             (line  84)
+* ELF section information:               readelf.             (line  79)
+* ELF section information <1>:           readelf.             (line  89)
+* ELF segment information:               readelf.             (line  73)
+* ELF symbol table information:          readelf.             (line  94)
+* ELF version sections information:      readelf.             (line 136)
 * elfedit:                               elfedit.             (line   6)
-* endianness:                            objdump.             (line 173)
+* endianness:                            objdump.             (line 185)
 * error on valid input:                  Bug Criteria.        (line  12)
 * external symbols:                      nm.                  (line 200)
 * external symbols <1>:                  nm.                  (line 264)
@@ -5437,13 +5511,13 @@ Binutils Index
 * extract from archive:                  ar cmdline.          (line 114)
 * fatal signal:                          Bug Criteria.        (line   9)
 * file name:                             nm.                  (line 144)
-* header information, all:               objdump.             (line 765)
+* header information, all:               objdump.             (line 787)
 * input .def file:                       dlltool.             (line 120)
 * input file name:                       nm.                  (line 144)
-* Instruction width:                     objdump.             (line 495)
+* Instruction width:                     objdump.             (line 507)
 * libraries:                             ar.                  (line  25)
 * listings strings:                      strings.             (line   6)
-* machine instructions:                  objdump.             (line 139)
+* machine instructions:                  objdump.             (line 143)
 * moving in archive:                     ar cmdline.          (line  34)
 * MRI compatibility, ar:                 ar scripts.          (line   8)
 * name duplication in archive:           ar cmdline.          (line 108)
@@ -5457,15 +5531,15 @@ Binutils Index
 * objdump:                               objdump.             (line   6)
 * objdump inlines:                       nm.                  (line 216)
 * object code format:                    nm.                  (line 330)
-* object code format <1>:                objdump.             (line  84)
-* object code format <2>:                size.                (line  84)
+* object code format <1>:                objdump.             (line  88)
+* object code format <2>:                size.                (line 103)
 * object code format <3>:                strings.             (line  94)
 * object code format <4>:                addr2line.           (line  81)
-* object file header:                    objdump.             (line 179)
+* object file header:                    objdump.             (line 191)
 * object file information:               objdump.             (line   6)
-* object file offsets:                   objdump.             (line 184)
-* object file sections:                  objdump.             (line 469)
-* object formats available:              objdump.             (line 223)
+* object file offsets:                   objdump.             (line 196)
+* object file sections:                  objdump.             (line 481)
+* object formats available:              objdump.             (line 235)
 * offsets of files:                      ar cmdline.          (line 183)
 * operations on archive:                 ar cmdline.          (line  22)
 * plugins:                               ar cmdline.          (line 256)
@@ -5473,87 +5547,87 @@ Binutils Index
 * printing from archive:                 ar cmdline.          (line  46)
 * printing strings:                      strings.             (line   6)
 * quick append to archive:               ar cmdline.          (line  54)
-* radix for section sizes:               size.                (line  66)
+* radix for section sizes:               size.                (line  85)
 * ranlib:                                ranlib.              (line   6)
 * ranlib <1>:                            ar cmdline.          (line  91)
 * readelf:                               readelf.             (line   6)
 * relative placement in archive:         ar cmdline.          (line 127)
-* relocation entries, in object file:    objdump.             (line 456)
+* relocation entries, in object file:    objdump.             (line 468)
 * removing symbols:                      strip.               (line   6)
 * repeated names in archive:             ar cmdline.          (line 108)
 * replacement in archive:                ar cmdline.          (line  73)
 * reporting bugs:                        Reporting Bugs.      (line   6)
 * scripts, ar:                           ar scripts.          (line   8)
-* section addresses in objdump:          objdump.             (line  76)
-* section headers:                       objdump.             (line 200)
-* section information:                   objdump.             (line 228)
+* section addresses in objdump:          objdump.             (line  80)
+* section headers:                       objdump.             (line 212)
+* section information:                   objdump.             (line 240)
 * section sizes:                         size.                (line   6)
-* sections, full contents:               objdump.             (line 469)
+* sections, full contents:               objdump.             (line 481)
 * size:                                  size.                (line   6)
-* size display format:                   size.                (line  27)
-* size number format:                    size.                (line  66)
+* size display format:                   size.                (line  28)
+* size number format:                    size.                (line  85)
 * sorting symbols:                       nm.                  (line 231)
-* source code context:                   objdump.             (line 193)
-* source disassembly:                    objdump.             (line 474)
+* source code context:                   objdump.             (line 205)
+* source disassembly:                    objdump.             (line 486)
 * source file name:                      nm.                  (line 144)
-* source filenames for object files:     objdump.             (line 232)
-* stab:                                  objdump.             (line 643)
-* start-address:                         objdump.             (line 652)
-* stop-address:                          objdump.             (line 656)
+* source filenames for object files:     objdump.             (line 244)
+* stab:                                  objdump.             (line 665)
+* start-address:                         objdump.             (line 674)
+* stop-address:                          objdump.             (line 678)
 * strings:                               strings.             (line   6)
 * strings, printing:                     strings.             (line   6)
 * strip:                                 strip.               (line   6)
-* Strip absolute paths:                  objdump.             (line 481)
+* Strip absolute paths:                  objdump.             (line 493)
 * symbol index:                          ar.                  (line  28)
 * symbol index <1>:                      ranlib.              (line   6)
 * symbol index, listing:                 nm.                  (line 253)
 * symbol line numbers:                   nm.                  (line 208)
-* symbol table entries, printing:        objdump.             (line 661)
+* symbol table entries, printing:        objdump.             (line 683)
 * symbols:                               nm.                  (line   6)
 * symbols, discarding:                   strip.               (line   6)
 * thin archives:                         ar.                  (line  40)
 * undefined symbols:                     nm.                  (line 264)
 * undefined symbols <1>:                 nm.                  (line 278)
 * Unix compatibility, ar:                ar cmdline.          (line   8)
-* unwind information:                    readelf.             (line 119)
+* unwind information:                    readelf.             (line 123)
 * Update ELF header:                     elfedit.             (line   6)
 * updating an archive:                   ar cmdline.          (line 213)
 * version:                               Top.                 (line   6)
-* VMA in objdump:                        objdump.             (line  76)
-* wide output, printing:                 objdump.             (line 771)
+* VMA in objdump:                        objdump.             (line  80)
+* wide output, printing:                 objdump.             (line 793)
 * writing archive index:                 ar cmdline.          (line 195)
 
 
 
 Tag Table:
 Node: Top1834
-Node: ar3488
-Node: ar cmdline6622
-Node: ar scripts18204
-Node: nm23890
-Node: objcopy36450
-Node: objdump75930
-Node: ranlib106731
-Node: size108330
-Node: strings111306
-Node: strip115678
-Node: c++filt124984
-Ref: c++filt-Footnote-1130846
-Node: addr2line130952
-Node: windmc136631
-Node: windres140290
-Node: dlltool146649
-Node: def file format159646
-Node: readelf162176
-Node: elfedit173896
-Node: Common Options176852
-Node: Selecting the Target System177886
-Node: Target Selection178818
-Node: Architecture Selection180799
-Node: Reporting Bugs181627
-Node: Bug Criteria182406
-Node: Bug Reporting182959
-Node: GNU Free Documentation License189829
-Node: Binutils Index214989
+Node: ar3501
+Node: ar cmdline6635
+Node: ar scripts18217
+Node: nm23903
+Node: objcopy36463
+Node: objdump76191
+Node: ranlib107704
+Node: size109303
+Node: strings113279
+Node: strip117651
+Node: c++filt127004
+Ref: c++filt-Footnote-1132866
+Node: addr2line132972
+Node: windmc138651
+Node: windres142310
+Node: dlltool148669
+Node: def file format161666
+Node: readelf164196
+Node: elfedit176539
+Node: Common Options179495
+Node: Selecting the Target System180529
+Node: Target Selection181461
+Node: Architecture Selection183442
+Node: Reporting Bugs184270
+Node: Bug Criteria185049
+Node: Bug Reporting185602
+Node: GNU Free Documentation License192503
+Node: Binutils Index217663
 
 End Tag Table
