@@ -1,5 +1,5 @@
 /* Generated automatically by the program 'build/genpreds'
-   from the machine description file '../../linaro/gcc/config/aarch64/aarch64.md'.  */
+   from the machine description file '../../gcc/gcc/config/aarch64/aarch64.md'.  */
 
 #ifndef GCC_TM_PREDS_H
 #define GCC_TM_PREDS_H
