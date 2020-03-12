@@ -210,8 +210,8 @@ Perl version between 5.6.1 and 5.6.24
      Necessary when regenerating 'Makefile' dependencies in libiberty.
      Necessary when regenerating 'libiberty/functions.texi'.  Necessary
      when generating manpages from Texinfo manuals.  Used by various
-     scripts to generate some files included in SVN (mainly
-     Unicode-related and rarely changing) from source tables.
+     scripts to generate some files included in the source repository
+     (mainly Unicode-related and rarely changing) from source tables.
 
      Used by 'automake'.
 
@@ -326,8 +326,8 @@ Flex version 2.5.4 (or later)
      Necessary when modifying '*.l' files.
 
      Necessary to build GCC during development because the generated
-     output files are not included in the SVN repository.  They are
-     included in releases.
+     output files are not included in the version-controlled source
+     repository.  They are included in releases.
 
 Texinfo version 4.7 (or later)
 
@@ -339,8 +339,8 @@ Texinfo version 4.7 (or later)
      is required for 'make pdf'.
 
      Necessary to build GCC documentation during development because the
-     generated output files are not included in the SVN repository.
-     They are included in releases.
+     generated output files are not included in the repository.  They
+     are included in releases.
 
 TeX (any working version)
 
@@ -353,11 +353,12 @@ Sphinx version 1.0 (or later)
      Necessary to regenerate 'jit/docs/_build/texinfo' from the '.rst'
      files in the directories below 'jit/docs'.
 
-SVN (any version)
+git (any version)
 SSH (any version)
 
-     Necessary to access the SVN repository.  Public releases and weekly
-     snapshots of the development sources are also available via FTP.
+     Necessary to access the source repository.  Public releases and
+     weekly snapshots of the development sources are also available via
+     HTTPS.
 
 GNU diffutils version 2.7 (or later)
 
@@ -374,8 +375,8 @@ File: gccinstall.info,  Node: Downloading the source,  Next: Configuration,  Pre
 3 Downloading GCC
 *****************
 
-GCC is distributed via SVN and FTP tarballs compressed with 'gzip' or
-'bzip2'.
+GCC is distributed via git and via HTTPS as tarballs compressed with
+'gzip' or 'bzip2'.
 
    Please refer to the releases web page for information on how to
 obtain GCC.
@@ -417,9 +418,10 @@ native and cross targets.
    We use SRCDIR to refer to the toplevel source directory for GCC; we
 use OBJDIR to refer to the toplevel build/object directory.
 
-   If you obtained the sources via SVN, SRCDIR must refer to the top
-'gcc' directory, the one where the 'MAINTAINERS' file can be found, and
-not its 'gcc' subdirectory, otherwise the build will fail.
+   If you obtained the sources by cloning the repository, SRCDIR must
+refer to the top 'gcc' directory, the one where the 'MAINTAINERS' file
+can be found, and not its 'gcc' subdirectory, otherwise the build will
+fail.
 
    If either SRCDIR or OBJDIR is located on an automounted NFS file
 system, the shell's built-in 'pwd' command will return temporary
@@ -1267,10 +1269,11 @@ option.
 '--enable-generated-files-in-srcdir'
      Neither the .c and .h files that are generated from Bison and flex
      nor the info manuals and man pages that are built from the .texi
-     files are present in the SVN development tree.  When building GCC
-     from that development tree, or from one of our snapshots, those
-     generated files are placed in your build directory, which allows
-     for the source to be in a readonly directory.
+     files are present in the repository development tree.  When
+     building GCC from that development tree, or from one of our
+     snapshots, those generated files are placed in your build
+     directory, which allows for the source to be in a readonly
+     directory.
 
      If you configure with '--enable-generated-files-in-srcdir' then
      those generated files will go into the source directory.  This is
@@ -1531,40 +1534,53 @@ option.
      '-Werror' are controlled by the Makefiles.
 
 '--enable-checking'
+'--disable-checking'
 '--enable-checking=LIST'
-     When you specify this option, the compiler is built to perform
-     internal consistency checks of the requested complexity.  This does
-     not change the generated code, but adds error checking within the
-     compiler.  This will slow down the compiler and may only work
-     properly if you are building the compiler with GCC.  This is
-     'yes,extra' by default when building from SVN or snapshots, but
-     'release' for releases.  The default for building the stage1
-     compiler is 'yes'.  More control over the checks may be had by
-     specifying LIST.  The categories of checks available are 'yes'
-     (most common checks 'assert,misc,tree,gc,rtlflag,runtime'), 'no'
+     This option controls performing internal consistency checks in the
+     compiler.  It does not change the generated code, but adds error
+     checking of the requested complexity.  This slows down the compiler
+     and may only work properly if you are building the compiler with
+     GCC.
+
+     When the option is not specified, the active set of checks depends
+     on context.  Namely, bootstrap stage 1 defaults to
+     '--enable-checking=yes', builds from release branches or release
+     archives default to '--enable-checking=release', and otherwise
+     '--enable-checking=yes,extra' is used.  When the option is
+     specified without a LIST, the result is the same as
+     '--enable-checking=yes'.  Likewise, '--disable-checking' is
+     equivalent to '--enable-checking=no'.
+
+     The categories of checks available in LIST are 'yes' (most common
+     checks 'assert,misc,gc,gimple,rtlflag,runtime,tree,types'), 'no'
      (no checks at all), 'all' (all but 'valgrind'), 'release' (cheapest
-     checks 'assert,runtime') or 'none' (same as 'no').  Individual
-     checks can be enabled with these flags 'assert', 'df', 'fold',
-     'gc', 'gcac', 'misc', 'rtl', 'rtlflag', 'runtime', 'tree', 'extra'
-     and 'valgrind'.  'extra' adds for 'misc' checking extra checks that
-     might affect code generation and should therefore not differ
-     between stage1 and later stages.
+     checks 'assert,runtime') or 'none' (same as 'no').  'release'
+     checks are always on and to disable them '--disable-checking' or
+     '--enable-checking=no[,<other checks>]' must be explicitly
+     requested.  Disabling assertions makes the compiler and runtime
+     slightly faster but increases the risk of undetected internal
+     errors causing wrong code to be generated.
+
+     Individual checks can be enabled with these flags: 'assert', 'df',
+     'extra', 'fold', 'gc', 'gcac', 'gimple', 'misc', 'rtl', 'rtlflag',
+     'runtime', 'tree', 'types' and 'valgrind'.  'extra' extends 'misc'
+     checking with extra checks that might affect code generation and
+     should therefore not differ between stage1 and later stages in
+     bootstrap.
 
      The 'valgrind' check requires the external 'valgrind' simulator,
-     available from <http://valgrind.org/>.  The 'df', 'rtl', 'gcac' and
-     'valgrind' checks are very expensive.  To disable all checking,
-     '--disable-checking' or '--enable-checking=none' must be explicitly
-     requested.  Disabling assertions will make the compiler and runtime
-     slightly faster but increase the risk of undetected internal errors
-     causing wrong code to be generated.
+     available from <http://valgrind.org/>.  The 'rtl' checks are
+     expensive and the 'df', 'gcac' and 'valgrind' checks are very
+     expensive.
 
 '--disable-stage1-checking'
 '--enable-stage1-checking'
 '--enable-stage1-checking=LIST'
-     If no '--enable-checking' option is specified the stage1 compiler
-     will be built with 'yes' checking enabled, otherwise the stage1
-     checking flags are the same as specified by '--enable-checking'.
-     To build the stage1 compiler with different checking options use
+     This option affects only bootstrap build.  If no
+     '--enable-checking' option is specified the stage1 compiler is
+     built with 'yes' checking enabled, otherwise the stage1 checking
+     flags are the same as specified by '--enable-checking'.  To build
+     the stage1 compiler with different checking options use
      '--enable-stage1-checking'.  The list of checking options is the
      same as for '--enable-checking'.  If your system is too slow or too
      small to bootstrap a released compiler with checking for stage1
@@ -1852,7 +1868,7 @@ option.
      paths PATH1, ..., PATHN.
 
           % SRCDIR/configure \
-              --enable-offload-target=i686-unknown-linux-gnu=/path/to/i686/compiler,x86_64-pc-linux-gnu
+              --enable-offload-targets=x86_64-intelmicemul-linux-gnu=/path/to/x86_64/compiler,nvptx-none,hsa
 
      If 'hsa' is specified as one of the targets, the compiler will be
      built with support for HSA GPU accelerators.  Because the same
@@ -2107,17 +2123,19 @@ occur, this could be the cause.
 
    The solution is not to use such a directory for building GCC.
 
-   Similarly, when building from SVN or snapshots, or if you modify
-'*.l' files, you need the Flex lexical analyzer generator installed.  If
-you do not modify '*.l' files, releases contain the Flex-generated files
-and you do not need Flex installed to build them.  There is still one
-Flex-based lexical analyzer (part of the build machinery, not of GCC
-itself) that is used even if you only build the C front end.
+   Similarly, when building from the source repository or snapshots, or
+if you modify '*.l' files, you need the Flex lexical analyzer generator
+installed.  If you do not modify '*.l' files, releases contain the
+Flex-generated files and you do not need Flex installed to build them.
+There is still one Flex-based lexical analyzer (part of the build
+machinery, not of GCC itself) that is used even if you only build the C
+front end.
 
-   When building from SVN or snapshots, or if you modify Texinfo
-documentation, you need version 4.7 or later of Texinfo installed if you
-want Info documentation to be regenerated.  Releases contain Info
-documentation pre-built for the unmodified documentation in the release.
+   When building from the source repository or snapshots, or if you
+modify Texinfo documentation, you need version 4.7 or later of Texinfo
+installed if you want Info documentation to be regenerated.  Releases
+contain Info documentation pre-built for the unmodified documentation in
+the release.
 
 5.1 Building a native compiler
 ==============================
@@ -4688,7 +4706,7 @@ Concept Index
 * Menu:
 
 * Binaries:                              Binaries.           (line    6)
-* build_configargs:                      Configuration.      (line 1603)
+* build_configargs:                      Configuration.      (line 1618)
 * Configuration:                         Configuration.      (line    6)
 * configurations supported by GCC:       Configurations.     (line    6)
 * Downloading GCC:                       Downloading the source.
@@ -4698,7 +4716,7 @@ Concept Index
 * FDL, GNU Free Documentation License:   GNU Free Documentation License.
                                                              (line    6)
 * Host specific installation:            Specific.           (line    6)
-* host_configargs:                       Configuration.      (line 1607)
+* host_configargs:                       Configuration.      (line 1622)
 * Installing GCC: Binaries:              Binaries.           (line    6)
 * Installing GCC: Building:              Building.           (line    6)
 * Installing GCC: Configuration:         Configuration.      (line    6)
@@ -4708,7 +4726,7 @@ Concept Index
 * Specific installation notes:           Specific.           (line    6)
 * Target specific installation:          Specific.           (line    6)
 * Target specific installation notes:    Specific.           (line    6)
-* target_configargs:                     Configuration.      (line 1611)
+* target_configargs:                     Configuration.      (line 1626)
 * Testing:                               Testing.            (line    6)
 * Testsuite:                             Testing.            (line    6)
 
@@ -4718,104 +4736,104 @@ Tag Table:
 Node: Top1696
 Node: Installing GCC2254
 Node: Prerequisites3888
-Node: Downloading the source14360
-Node: Configuration16022
-Ref: with-gnu-as31635
-Ref: with-as32530
-Ref: with-gnu-ld33943
-Ref: WithAixSoname56340
-Ref: AixLdCommand57001
-Node: Building93150
-Node: Testing109724
-Node: Final install117611
-Node: Binaries122911
-Node: Specific124038
-Ref: aarch64-x-x124545
-Ref: alpha-x-x126565
-Ref: amd64-x-solaris210126974
-Ref: amdgcn-unknown-amdhsa127077
-Ref: arc-x-elf32127663
-Ref: arc-linux-uclibc127839
-Ref: arm-x-eabi127980
-Ref: avr128233
-Ref: bfin128814
-Ref: cr16129056
-Ref: cris129472
-Ref: dos130170
-Ref: epiphany-x-elf130493
-Ref: x-x-freebsd130598
-Ref: ft32-x-elf132398
-Ref: h8300-hms132496
-Ref: hppa-hp-hpux132848
-Ref: hppa-hp-hpux10135220
-Ref: hppa-hp-hpux11135633
-Ref: x-x-linux-gnu141035
-Ref: ix86-x-linux141228
-Ref: ix86-x-solaris210141541
-Ref: ia64-x-linux142886
-Ref: ia64-x-hpux143656
-Ref: x-ibm-aix144211
-Ref: TransferAixShobj147873
-Ref: iq2000-x-elf151683
-Ref: lm32-x-elf151823
-Ref: lm32-x-uclinux151927
-Ref: m32c-x-elf152055
-Ref: m32r-x-elf152157
-Ref: m68k-x-x152259
-Ref: m68k-x-uclinux153297
-Ref: microblaze-x-elf153542
-Ref: mips-x-x153661
-Ref: moxie-x-elf155571
-Ref: msp430-x-elf155618
-Ref: nds32le-x-elf155721
-Ref: nds32be-x-elf155793
-Ref: nvptx-x-none155862
-Ref: or1k-x-elf156425
-Ref: or1k-x-linux156556
-Ref: powerpc-x-x156637
-Ref: powerpc-x-darwin156828
-Ref: powerpc-x-elf157322
-Ref: powerpc-x-linux-gnu157407
-Ref: powerpc-x-netbsd157502
-Ref: powerpc-x-eabisim157590
-Ref: powerpc-x-eabi157716
-Ref: powerpcle-x-elf157792
-Ref: powerpcle-x-eabisim157884
-Ref: powerpcle-x-eabi158017
-Ref: rl78-x-elf158100
-Ref: riscv32-x-elf158206
-Ref: riscv32-x-linux158416
-Ref: riscv64-x-elf158594
-Ref: riscv64-x-linux158804
-Ref: rx-x-elf158982
-Ref: s390-x-linux159028
-Ref: s390x-x-linux159100
-Ref: s390x-ibm-tpf159187
-Ref: x-x-solaris2159318
-Ref: sparc-x-x163339
-Ref: sparc-sun-solaris2163841
-Ref: sparc-sun-solaris210164980
-Ref: sparc-x-linux165355
-Ref: sparc64-x-solaris2165386
-Ref: sparcv9-x-solaris2165719
-Ref: c6x-x-x165806
-Ref: tilegx-*-linux165898
-Ref: tilegxbe-*-linux166040
-Ref: tilepro-*-linux166183
-Ref: visium-x-elf166304
-Ref: x-x-vxworks166412
-Ref: x86-64-x-x167935
-Ref: x86-64-x-solaris210168263
-Ref: xtensa-x-elf168927
-Ref: xtensa-x-linux169598
-Ref: windows169939
-Ref: x-x-cygwin171780
-Ref: x-x-mingw32172333
-Ref: older172559
-Ref: elf174676
-Node: Old174934
-Node: Configurations178067
-Node: GNU Free Documentation License181605
-Node: Concept Index206733
+Node: Downloading the source14407
+Node: Configuration16078
+Ref: with-gnu-as31709
+Ref: with-as32604
+Ref: with-gnu-ld34017
+Ref: WithAixSoname56426
+Ref: AixLdCommand57087
+Node: Building93671
+Node: Testing110280
+Node: Final install118167
+Node: Binaries123467
+Node: Specific124594
+Ref: aarch64-x-x125101
+Ref: alpha-x-x127121
+Ref: amd64-x-solaris210127530
+Ref: amdgcn-unknown-amdhsa127633
+Ref: arc-x-elf32128219
+Ref: arc-linux-uclibc128395
+Ref: arm-x-eabi128536
+Ref: avr128789
+Ref: bfin129370
+Ref: cr16129612
+Ref: cris130028
+Ref: dos130726
+Ref: epiphany-x-elf131049
+Ref: x-x-freebsd131154
+Ref: ft32-x-elf132954
+Ref: h8300-hms133052
+Ref: hppa-hp-hpux133404
+Ref: hppa-hp-hpux10135776
+Ref: hppa-hp-hpux11136189
+Ref: x-x-linux-gnu141591
+Ref: ix86-x-linux141784
+Ref: ix86-x-solaris210142097
+Ref: ia64-x-linux143442
+Ref: ia64-x-hpux144212
+Ref: x-ibm-aix144767
+Ref: TransferAixShobj148429
+Ref: iq2000-x-elf152239
+Ref: lm32-x-elf152379
+Ref: lm32-x-uclinux152483
+Ref: m32c-x-elf152611
+Ref: m32r-x-elf152713
+Ref: m68k-x-x152815
+Ref: m68k-x-uclinux153853
+Ref: microblaze-x-elf154098
+Ref: mips-x-x154217
+Ref: moxie-x-elf156127
+Ref: msp430-x-elf156174
+Ref: nds32le-x-elf156277
+Ref: nds32be-x-elf156349
+Ref: nvptx-x-none156418
+Ref: or1k-x-elf156981
+Ref: or1k-x-linux157112
+Ref: powerpc-x-x157193
+Ref: powerpc-x-darwin157384
+Ref: powerpc-x-elf157878
+Ref: powerpc-x-linux-gnu157963
+Ref: powerpc-x-netbsd158058
+Ref: powerpc-x-eabisim158146
+Ref: powerpc-x-eabi158272
+Ref: powerpcle-x-elf158348
+Ref: powerpcle-x-eabisim158440
+Ref: powerpcle-x-eabi158573
+Ref: rl78-x-elf158656
+Ref: riscv32-x-elf158762
+Ref: riscv32-x-linux158972
+Ref: riscv64-x-elf159150
+Ref: riscv64-x-linux159360
+Ref: rx-x-elf159538
+Ref: s390-x-linux159584
+Ref: s390x-x-linux159656
+Ref: s390x-ibm-tpf159743
+Ref: x-x-solaris2159874
+Ref: sparc-x-x163895
+Ref: sparc-sun-solaris2164397
+Ref: sparc-sun-solaris210165536
+Ref: sparc-x-linux165911
+Ref: sparc64-x-solaris2165942
+Ref: sparcv9-x-solaris2166275
+Ref: c6x-x-x166362
+Ref: tilegx-*-linux166454
+Ref: tilegxbe-*-linux166596
+Ref: tilepro-*-linux166739
+Ref: visium-x-elf166860
+Ref: x-x-vxworks166968
+Ref: x86-64-x-x168491
+Ref: x86-64-x-solaris210168819
+Ref: xtensa-x-elf169483
+Ref: xtensa-x-linux170154
+Ref: windows170495
+Ref: x-x-cygwin172336
+Ref: x-x-mingw32172889
+Ref: older173115
+Ref: elf175232
+Node: Old175490
+Node: Configurations178623
+Node: GNU Free Documentation License182161
+Node: Concept Index207289
 
 End Tag Table

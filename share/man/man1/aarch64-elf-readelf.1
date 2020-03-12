@@ -129,13 +129,13 @@
 .\" ========================================================================
 .\"
 .IX Title "READELF 1"
-.TH READELF 1 "2019-08-14" "binutils-2.32.51.0.1" "GNU Development Tools"
+.TH READELF 1 "2020-03-12" "binutils-2.34" "GNU Development Tools"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "NAME"
-readelf \- Displays information about ELF files.
+readelf \- display information about ELF files
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
 readelf [\fB\-a\fR|\fB\-\-all\fR]
@@ -640,8 +640,9 @@ Display the contents of the specified \s-1CTF\s0 section.  \s-1CTF\s0 sections t
 contain many subsections, all of which are displayed in order.
 .IP "\fB\-\-ctf\-parent=\fR\fIsection\fR" 4
 .IX Item "--ctf-parent=section"
-Specify the name of another section from which the \s-1CTF\s0 file can inherit
-types.
+Specify the name of another section from which the \s-1CTF\s0 dictionary can inherit
+types.  (If none is specified, we assume the \s-1CTF\s0 dictionary inherits types
+from the default-named member of the archive contained within this section.)
 .IP "\fB\-\-ctf\-symbols=\fR\fIsection\fR" 4
 .IX Item "--ctf-symbols=section"
 .PD 0
@@ -649,7 +650,8 @@ types.
 .IX Item "--ctf-strings=section"
 .PD
 Specify the name of another section from which the \s-1CTF\s0 file can inherit
-strings and symbols.
+strings and symbols.  By default, the \f(CW\*(C`.symtab\*(C'\fR and its linked
+string table are used.
 .Sp
 If either of \fB\-\-ctf\-symbols\fR or \fB\-\-ctf\-strings\fR is specified, the
 other must be specified as well.
@@ -704,7 +706,7 @@ with a backslash.  The \fIfile\fR may itself contain additional
 \&\fIobjdump\fR\|(1), and the Info entries for \fIbinutils\fR.
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
-Copyright (c) 1991\-2019 Free Software Foundation, Inc.
+Copyright (c) 1991\-2020 Free Software Foundation, Inc.
 .PP
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the \s-1GNU\s0 Free Documentation License, Version 1.3
