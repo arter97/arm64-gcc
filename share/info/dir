@@ -66,3 +66,4 @@ Software development
                                   processing program.
 * gdbserver: (gdb) Server.      The GNU debugging server.
 * gprof: (gprof).               Profiling your program's execution
+* lto-dump: (gcc) lto-dump.     'lto-dump'--Tool for dumping LTO object files.
