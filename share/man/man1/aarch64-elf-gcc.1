@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "GCC 1"
-.TH GCC 1 "2020-05-07" "gcc-10.1.0" "GNU"
+.TH GCC 1 "2020-07-23" "gcc-10.2.0" "GNU"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1203,7 +1203,7 @@ See \s-1RS/6000\s0 and PowerPC Options.
 \&\-mgnu\-attribute  \-mno\-gnu\-attribute 
 \&\-mstack\-protector\-guard=\fR\fIguard\fR \fB\-mstack\-protector\-guard\-reg=\fR\fIreg\fR 
 \&\fB\-mstack\-protector\-guard\-offset=\fR\fIoffset\fR \fB\-mprefixed \-mno\-prefixed 
-\&\-mpcrel \-mno\-pcrel\fR
+\&\-mpcrel \-mno\-pcrel \-mmma \-mno\-mmma\fR
 .Sp
 \&\fI\s-1RX\s0 Options\fR
 \&\fB\-m64bit\-doubles  \-m32bit\-doubles  \-fpu  \-nofpu
@@ -9411,7 +9411,7 @@ When enabled, interprocedural constant propagation performs function cloning
 when externally visible function can be called with constant arguments.
 Because this optimization can create multiple copies of functions,
 it may significantly increase code size
-(see \fB\-\-param ipcp\-unit\-growth=\fR\fIvalue\fR).
+(see \fB\-\-param ipa\-cp\-unit\-growth=\fR\fIvalue\fR).
 This flag is enabled by default at \fB\-O3\fR.
 It is also enabled by \fB\-fprofile\-use\fR and \fB\-fauto\-profile\fR.
 .IP "\fB\-fipa\-bit\-cp\fR" 4
@@ -10325,6 +10325,14 @@ conflicting translation units.  Specifically
 precedence; and for example \fB\-ffp\-contract=off\fR takes precedence
 over \fB\-ffp\-contract=fast\fR.  You can override them at link time.
 .Sp
+Diagnostic options such as \fB\-Wstringop\-overflow\fR are passed
+through to the link stage and their setting matches that of the
+compile-step at function granularity.  Note that this matters only
+for diagnostics emitted during optimization.  Note that code
+transforms such as inlining can lead to warnings being enabled
+or disabled for regions if code not consistent with the setting
+at compile time.
+.Sp
 When you need to pass options to the assembler via \fB\-Wa\fR or
 \&\fB\-Xassembler\fR make sure to either compile such translation
 units with \fB\-fno\-lto\fR or consistently use the same assembler
@@ -11208,8 +11216,8 @@ Specifies maximal overall growth of the compilation unit caused by inlining.
 For example, parameter value 20 limits unit growth to 1.2 times the original
 size. Cold functions (either marked cold via an attribute or by profile
 feedback) are not accounted into the unit size.
-.IP "\fBipcp-unit-growth\fR" 4
-.IX Item "ipcp-unit-growth"
+.IP "\fBipa-cp-unit-growth\fR" 4
+.IX Item "ipa-cp-unit-growth"
 Specifies maximal overall growth of the compilation unit caused by
 interprocedural constant propagation.  For example, parameter value 10 limits
 unit growth to 1.1 times the original size.
@@ -12221,9 +12229,6 @@ will not try to thread through its block.
 .IX Item "uninit-control-dep-attempts"
 Maximum number of nested calls to search for control dependencies
 during uninitialized variable analysis.
-.IP "\fBmax-once-peeled-insns\fR" 4
-.IX Item "max-once-peeled-insns"
-The maximum number of insns of a peeled loop that rolls only once.
 .IP "\fBsra-max-scalarization-size-Osize\fR" 4
 .IX Item "sra-max-scalarization-size-Osize"
 Maximum size, in storage units, of an aggregate
@@ -12254,6 +12259,37 @@ a property of a variable such as its value.  This limits the number
 of iterations or recursive calls \s-1GCC\s0 performs when optimizing certain
 statements or when determining their validity prior to issuing
 diagnostics.
+.IP "\fBstore-merging-max-size\fR" 4
+.IX Item "store-merging-max-size"
+Maximum size of a single store merging region in bytes.
+.IP "\fBhash-table-verification-limit\fR" 4
+.IX Item "hash-table-verification-limit"
+The number of elements for which hash table verification is done
+for each searched element.
+.IP "\fBmax-find-base-term-values\fR" 4
+.IX Item "max-find-base-term-values"
+Maximum number of VALUEs handled during a single find_base_term call.
+.IP "\fBanalyzer-max-enodes-per-program-point\fR" 4
+.IX Item "analyzer-max-enodes-per-program-point"
+The maximum number of exploded nodes per program point within
+the analyzer, before terminating analysis of that point.
+.IP "\fBanalyzer-min-snodes-for-call-summary\fR" 4
+.IX Item "analyzer-min-snodes-for-call-summary"
+The minimum number of supernodes within a function for the
+analyzer to consider summarizing its effects at call sites.
+.IP "\fBanalyzer-max-recursion-depth\fR" 4
+.IX Item "analyzer-max-recursion-depth"
+The maximum number of times a callsite can appear in a call stack
+within the analyzer, before terminating analysis of a call that would
+recurse deeper.
+.IP "\fBgimple-fe-computed-hot-bb-threshold\fR" 4
+.IX Item "gimple-fe-computed-hot-bb-threshold"
+The number of executions of a basic block which is considered hot.
+The parameter is used only in \s-1GIMPLE FE.\s0
+.IP "\fBanalyzer-bb-explosion-factor\fR" 4
+.IX Item "analyzer-bb-explosion-factor"
+The maximum number of 'after supernode' exploded nodes within the analyzer
+per supernode, before terminating analysis.
 .RE
 .RS 4
 .Sp
@@ -16256,7 +16292,7 @@ performance of the code.  Permissible values for this option are:
 \&\fBocteontx2f95mm\fR
 \&\fBthunderx\fR, \fBthunderxt88\fR,
 \&\fBthunderxt88p1\fR, \fBthunderxt81\fR, \fBtsv110\fR,
-\&\fBthunderxt83\fR, \fBthunderx2t99\fR, \fBthunderx3t110\fR,
+\&\fBthunderxt83\fR, \fBthunderx2t99\fR, \fBthunderx3t110\fR, \fBzeus\fR,
 \&\fBcortex\-a57.cortex\-a53\fR, \fBcortex\-a72.cortex\-a53\fR,
 \&\fBcortex\-a73.cortex\-a35\fR, \fBcortex\-a73.cortex\-a53\fR,
 \&\fBcortex\-a75.cortex\-a55\fR, \fBcortex\-a76.cortex\-a55\fR
@@ -24598,7 +24634,8 @@ following options:
 \&\-mpowerpc\-gpopt  \-mpowerpc\-gfxopt 
 \&\-mmulhw  \-mdlmzb  \-mmfpgpr  \-mvsx 
 \&\-mcrypto  \-mhtm  \-mpower8\-fusion  \-mpower8\-vector 
-\&\-mquad\-memory  \-mquad\-memory\-atomic  \-mfloat128  \-mfloat128\-hardware\fR
+\&\-mquad\-memory  \-mquad\-memory\-atomic  \-mfloat128 
+\&\-mfloat128\-hardware \-mprefixed \-mpcrel \-mmma\fR
 .Sp
 The particular options set for any particular \s-1CPU\s0 varies between
 compiler versions, depending on what setting seems to produce optimal
@@ -25607,6 +25644,14 @@ addressing (\fB\-mprefixed\fR) options are enabled.
 .PD
 Generate (do not generate) addressing modes using prefixed load and
 store instructions when the option \fB\-mcpu=future\fR is used.
+.IP "\fB\-mmma\fR" 4
+.IX Item "-mmma"
+.PD 0
+.IP "\fB\-mno\-mma\fR" 4
+.IX Item "-mno-mma"
+.PD
+Generate (do not generate) the \s-1MMA\s0 instructions when the option
+\&\fB\-mcpu=future\fR is used.
 .PP
 \fI\s-1RX\s0 Options\fR
 .IX Subsection "RX Options"
