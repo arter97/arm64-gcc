@@ -21,7 +21,7 @@ END-INFO-DIR-ENTRY
    This file documents the GNU debugger GDB.
 
    This is the Tenth Edition, of 'Debugging with GDB: the GNU
-Source-Level Debugger' for GDB (GDB) Version 10.0.50.20200724-git.
+Source-Level Debugger' for GDB (GDB) Version 10.0.50.20200919-git.
 
    Copyright (C) 1988-2020 Free Software Foundation, Inc.
 
@@ -45,7 +45,7 @@ Debugging with GDB
 This file describes GDB, the GNU symbolic debugger.
 
    This is the Tenth Edition, for GDB (GDB) Version
-10.0.50.20200724-git.
+10.0.50.20200919-git.
 
    Copyright (C) 1988-2020 Free Software Foundation, Inc.
 
@@ -508,7 +508,7 @@ Let us use GDB to try to see what is going on.
      There is absolutely no warranty for GDB; type "show warranty"
       for details.
 
-     GDB 10.0.50.20200724-git, Copyright 1999 Free Software Foundation, Inc...
+     GDB 10.0.50.20200919-git, Copyright 1999 Free Software Foundation, Inc...
      (gdb)
 
 GDB reads only enough symbol data to know where to find the rest when
@@ -42405,7 +42405,7 @@ and TeX (or 'texi2roff') to typeset the printed version.
 
    GDB includes an already formatted copy of the on-line Info version of
 this manual in the 'gdb' subdirectory.  The main Info file is
-'gdb-10.0.50.20200724-git/gdb/gdb.info', and it refers to subordinate
+'gdb-10.0.50.20200919-git/gdb/gdb.info', and it refers to subordinate
 files matching 'gdb.info*' in the same directory.  If necessary, you can
 print out these files, or read them with any editor; but they are easier
 to read using the 'info' subsystem in GNU Emacs or the standalone 'info'
@@ -42415,8 +42415,8 @@ program, available as part of the GNU Texinfo distribution.
 Info formatting programs, such as 'texinfo-format-buffer' or 'makeinfo'.
 
    If you have 'makeinfo' installed, and are in the top level GDB source
-directory ('gdb-10.0.50.20200724-git', in the case of version
-10.0.50.20200724-git), you can make the Info file by typing:
+directory ('gdb-10.0.50.20200919-git', in the case of version
+10.0.50.20200919-git), you can make the Info file by typing:
 
      cd gdb
      make gdb.info
@@ -42441,7 +42441,7 @@ On its own, TeX cannot either read or typeset a Texinfo file.
 
    If you have TeX and a DVI printer program installed, you can typeset
 and print this manual.  First switch to the 'gdb' subdirectory of the
-main source directory (for example, to 'gdb-10.0.50.20200724-git/gdb')
+main source directory (for example, to 'gdb-10.0.50.20200919-git/gdb')
 and type:
 
      make gdb.dvi
@@ -42450,8 +42450,8 @@ and type:
 
    ---------- Footnotes ----------
 
-   (1) In 'gdb-10.0.50.20200724-git/gdb/refcard.ps' of the version
-10.0.50.20200724-git release.
+   (1) In 'gdb-10.0.50.20200919-git/gdb/refcard.ps' of the version
+10.0.50.20200919-git release.
 
 
 File: gdb.info,  Node: Installing GDB,  Next: Maintenance Commands,  Prev: Formatting Documentation,  Up: Top
@@ -42602,35 +42602,35 @@ preparing GDB for installation; you can then use 'make' to build the
 a single directory, whose name is usually composed by appending the
 version number to 'gdb'.
 
-   For example, the GDB version 10.0.50.20200724-git distribution is in
-the 'gdb-10.0.50.20200724-git' directory.  That directory contains:
+   For example, the GDB version 10.0.50.20200919-git distribution is in
+the 'gdb-10.0.50.20200919-git' directory.  That directory contains:
 
-'gdb-10.0.50.20200724-git/configure (and supporting files)'
+'gdb-10.0.50.20200919-git/configure (and supporting files)'
      script for configuring GDB and all its supporting libraries
 
-'gdb-10.0.50.20200724-git/gdb'
+'gdb-10.0.50.20200919-git/gdb'
      the source specific to GDB itself
 
-'gdb-10.0.50.20200724-git/bfd'
+'gdb-10.0.50.20200919-git/bfd'
      source for the Binary File Descriptor library
 
-'gdb-10.0.50.20200724-git/include'
+'gdb-10.0.50.20200919-git/include'
      GNU include files
 
-'gdb-10.0.50.20200724-git/libiberty'
+'gdb-10.0.50.20200919-git/libiberty'
      source for the '-liberty' free software library
 
-'gdb-10.0.50.20200724-git/opcodes'
+'gdb-10.0.50.20200919-git/opcodes'
      source for the library of opcode tables and disassemblers
 
-'gdb-10.0.50.20200724-git/readline'
+'gdb-10.0.50.20200919-git/readline'
      source for the GNU command-line interface
 
    There may be other subdirectories as well.
 
    The simplest way to configure and build GDB is to run 'configure'
 from the 'gdb-VERSION-NUMBER' source directory, which in this example is
-the 'gdb-10.0.50.20200724-git' directory.
+the 'gdb-10.0.50.20200919-git' directory.
 
    First switch to the 'gdb-VERSION-NUMBER' source directory if you are
 not already in it; then run 'configure'.  Pass the identifier for the
@@ -42638,7 +42638,7 @@ platform on which GDB will run as an argument.
 
    For example:
 
-     cd gdb-10.0.50.20200724-git
+     cd gdb-10.0.50.20200919-git
      ./configure
      make
 
@@ -42686,13 +42686,13 @@ to specify a path to find 'configure' itself from your working
 directory.  If the path to 'configure' would be the same as the argument
 to '--srcdir', you can leave out the '--srcdir' option; it is assumed.)
 
-   For example, with version 10.0.50.20200724-git, you can build GDB in
+   For example, with version 10.0.50.20200919-git, you can build GDB in
 a separate directory for a Sun 4 like this:
 
-     cd gdb-10.0.50.20200724-git
+     cd gdb-10.0.50.20200919-git
      mkdir ../gdb-sun4
      cd ../gdb-sun4
-     ../gdb-10.0.50.20200724-git/configure
+     ../gdb-10.0.50.20200919-git/configure
      make
 
    When 'configure' builds a configuration using a remote source
@@ -42703,7 +42703,7 @@ the example, you'd find the Sun 4 library 'libiberty.a' in the directory
 
    Make sure that your path to the 'configure' script has just one
 instance of 'gdb' in it.  If your path to 'configure' looks like
-'../gdb-10.0.50.20200724-git/gdb/configure', you are configuring only
+'../gdb-10.0.50.20200919-git/gdb/configure', you are configuring only
 one subdirectory of GDB, not the whole package.  This leads to build
 errors about missing include files such as 'bfd/bfd.h'.
 
@@ -42719,8 +42719,8 @@ a configured directory--whatever directory you were in when you called
 
    The 'Makefile' that 'configure' generates in each source directory
 also runs recursively.  If you type 'make' in a source directory such as
-'gdb-10.0.50.20200724-git' (or in a separate configured directory
-configured with '--srcdir=DIRNAME/gdb-10.0.50.20200724-git'), you will
+'gdb-10.0.50.20200919-git' (or in a separate configured directory
+configured with '--srcdir=DIRNAME/gdb-10.0.50.20200919-git'), you will
 build all the required libraries, and then build GDB.
 
    When you have multiple hosts or targets configured in separate
@@ -42765,7 +42765,7 @@ you can use it to test your guesses on abbreviations--for example:
      Invalid configuration `i986v': machine `i986v' not recognized
 
 'config.sub' is also distributed in the GDB source directory
-('gdb-10.0.50.20200724-git', for version 10.0.50.20200724-git).
+('gdb-10.0.50.20200919-git', for version 10.0.50.20200919-git).
 
 
 File: gdb.info,  Node: Configure Options,  Next: System-wide configuration,  Prev: Config Names,  Up: Installing GDB
