@@ -1,4 +1,4 @@
-This is gccinstall.info, produced by makeinfo version 6.5 from
+This is gccinstall.info, produced by makeinfo version 6.7 from
 install.texi.
 
 Copyright (C) 1988-2020 Free Software Foundation, Inc.
@@ -1109,7 +1109,7 @@ option.
      ARC, ARM, i386, M68k, PowerPC, and SPARC.  It is mandatory for ARC.
      The '--with-cpu-32' and '--with-cpu-64' options specify separate
      default CPUs for 32-bit and 64-bit modes; these options are only
-     supported for i386, x86-64, PowerPC, and SPARC.
+     supported for aarch64, i386, x86-64, PowerPC, and SPARC.
 
 '--with-schedule=CPU'
 '--with-arch=CPU'
@@ -2451,6 +2451,10 @@ configurations are:
      Arranges for the run time of each program started by the GCC
      driver, built in any stage, to be logged to 'time.log', in the top
      level of the build tree.
+
+'bootstrap-asan'
+     Compiles GCC itself using Address Sanitization in order to catch
+     invalid memory accesses within the GCC code.
 
 5.2 Building a cross compiler
 =============================
@@ -4851,98 +4855,103 @@ Node: Configuration17158
 Ref: with-gnu-as33246
 Ref: with-as34141
 Ref: with-gnu-ld35550
-Ref: WithAixSoname58220
-Ref: AixLdCommand58881
-Node: Building100312
-Node: Testing116043
-Node: Final install123930
-Node: Binaries129230
-Node: Specific130337
-Ref: aarch64-x-x130844
-Ref: alpha-x-x132864
-Ref: amd64-x-solaris2133078
-Ref: amdgcn-x-amdhsa133160
-Ref: arc-x-elf32133686
-Ref: arc-linux-uclibc133862
-Ref: arm-x-eabi134003
-Ref: avr134256
-Ref: bfin134837
-Ref: cr16135100
-Ref: cris135516
-Ref: dos136214
-Ref: epiphany-x-elf136537
-Ref: x-x-freebsd136642
-Ref: ft32-x-elf138442
-Ref: h8300-hms138540
-Ref: hppa-hp-hpux138892
-Ref: hppa-hp-hpux10141264
-Ref: hppa-hp-hpux11141677
-Ref: x-x-linux-gnu147079
-Ref: ix86-x-linux147272
-Ref: ix86-x-solaris2147585
-Ref: ia64-x-linux148661
-Ref: ia64-x-hpux149431
-Ref: x-ibm-aix149986
-Ref: TransferAixShobj153648
-Ref: iq2000-x-elf157458
-Ref: lm32-x-elf157598
-Ref: lm32-x-uclinux157702
-Ref: m32c-x-elf157830
-Ref: m32r-x-elf157932
-Ref: m68k-x-x158034
-Ref: m68k-x-uclinux159072
-Ref: microblaze-x-elf159317
-Ref: mips-x-x159436
-Ref: moxie-x-elf161346
-Ref: msp430-x-elf161393
-Ref: nds32le-x-elf161950
-Ref: nds32be-x-elf162022
-Ref: nvptx-x-none162091
-Ref: or1k-x-elf162654
-Ref: or1k-x-linux162785
-Ref: powerpc-x-x162866
-Ref: powerpc-x-darwin163057
-Ref: powerpc-x-elf163551
-Ref: powerpc-x-linux-gnu163636
-Ref: powerpc-x-netbsd163731
-Ref: powerpc-x-eabisim163819
-Ref: powerpc-x-eabi163945
-Ref: powerpcle-x-elf164021
-Ref: powerpcle-x-eabisim164113
-Ref: powerpcle-x-eabi164246
-Ref: rl78-x-elf164329
-Ref: riscv32-x-elf164435
-Ref: riscv32-x-linux164624
-Ref: riscv64-x-elf164781
-Ref: riscv64-x-linux164970
-Ref: rx-x-elf165127
-Ref: s390-x-linux165173
-Ref: s390x-x-linux165245
-Ref: s390x-ibm-tpf165332
-Ref: x-x-solaris2165463
-Ref: sparc-x-x168570
-Ref: sparc-sun-solaris2169072
-Ref: sparc-x-linux170215
-Ref: sparc64-x-solaris2170246
-Ref: sparcv9-x-solaris2170964
-Ref: c6x-x-x171051
-Ref: tilegx-*-linux171143
-Ref: tilegxbe-*-linux171285
-Ref: tilepro-*-linux171428
-Ref: visium-x-elf171549
-Ref: x-x-vxworks171657
-Ref: x86-64-x-x173180
-Ref: x86-64-x-solaris2173508
-Ref: xtensa-x-elf174158
-Ref: xtensa-x-linux174829
-Ref: windows175170
-Ref: x-x-cygwin177011
-Ref: x-x-mingw32177564
-Ref: older177790
-Ref: elf179907
-Node: Old180165
-Node: Configurations183298
-Node: GNU Free Documentation License186836
-Node: Concept Index211964
+Ref: WithAixSoname58229
+Ref: AixLdCommand58890
+Node: Building100321
+Node: Testing116190
+Node: Final install124077
+Node: Binaries129377
+Node: Specific130484
+Ref: aarch64-x-x130991
+Ref: alpha-x-x133011
+Ref: amd64-x-solaris2133225
+Ref: amdgcn-x-amdhsa133307
+Ref: arc-x-elf32133833
+Ref: arc-linux-uclibc134009
+Ref: arm-x-eabi134150
+Ref: avr134403
+Ref: bfin134984
+Ref: cr16135247
+Ref: cris135663
+Ref: dos136361
+Ref: epiphany-x-elf136684
+Ref: x-x-freebsd136789
+Ref: ft32-x-elf138589
+Ref: h8300-hms138687
+Ref: hppa-hp-hpux139039
+Ref: hppa-hp-hpux10141411
+Ref: hppa-hp-hpux11141824
+Ref: x-x-linux-gnu147226
+Ref: ix86-x-linux147419
+Ref: ix86-x-solaris2147732
+Ref: ia64-x-linux148808
+Ref: ia64-x-hpux149578
+Ref: x-ibm-aix150133
+Ref: TransferAixShobj153795
+Ref: iq2000-x-elf157605
+Ref: lm32-x-elf157745
+Ref: lm32-x-uclinux157849
+Ref: m32c-x-elf157977
+Ref: m32r-x-elf158079
+Ref: m68k-x-x158181
+Ref: m68k-x-uclinux159219
+Ref: microblaze-x-elf159464
+Ref: mips-x-x159583
+Ref: moxie-x-elf161493
+Ref: msp430-x-elf161540
+Ref: nds32le-x-elf162097
+Ref: nds32be-x-elf162169
+Ref: nvptx-x-none162238
+Ref: or1k-x-elf162801
+Ref: or1k-x-linux162932
+Ref: powerpc-x-x163013
+Ref: powerpc-x-darwin163204
+Ref: powerpc-x-elf163698
+Ref: powerpc-x-linux-gnu163783
+Ref: powerpc-x-netbsd163878
+Ref: powerpc-x-eabisim163966
+Ref: powerpc-x-eabi164092
+Ref: powerpcle-x-elf164168
+Ref: powerpcle-x-eabisim164260
+Ref: powerpcle-x-eabi164393
+Ref: rl78-x-elf164476
+Ref: riscv32-x-elf164582
+Ref: riscv32-x-linux164771
+Ref: riscv64-x-elf164928
+Ref: riscv64-x-linux165117
+Ref: rx-x-elf165274
+Ref: s390-x-linux165320
+Ref: s390x-x-linux165392
+Ref: s390x-ibm-tpf165479
+Ref: x-x-solaris2165610
+Ref: sparc-x-x168717
+Ref: sparc-sun-solaris2169219
+Ref: sparc-x-linux170362
+Ref: sparc64-x-solaris2170393
+Ref: sparcv9-x-solaris2171111
+Ref: c6x-x-x171198
+Ref: tilegx-*-linux171290
+Ref: tilegxbe-*-linux171432
+Ref: tilepro-*-linux171575
+Ref: visium-x-elf171696
+Ref: x-x-vxworks171804
+Ref: x86-64-x-x173327
+Ref: x86-64-x-solaris2173655
+Ref: xtensa-x-elf174305
+Ref: xtensa-x-linux174976
+Ref: windows175317
+Ref: x-x-cygwin177158
+Ref: x-x-mingw32177711
+Ref: older177937
+Ref: elf180054
+Node: Old180312
+Node: Configurations183445
+Node: GNU Free Documentation License186983
+Node: Concept Index212111
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:
