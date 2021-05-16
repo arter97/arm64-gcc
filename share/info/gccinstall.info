@@ -1,7 +1,7 @@
 This is gccinstall.info, produced by makeinfo version 6.7 from
 install.texi.
 
-Copyright (C) 1988-2020 Free Software Foundation, Inc.
+Copyright (C) 1988-2021 Free Software Foundation, Inc.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -24,7 +24,7 @@ START-INFO-DIR-ENTRY
 * gccinstall: (gccinstall).    Installing the GNU Compiler Collection.
 END-INFO-DIR-ENTRY
 
-   Copyright (C) 1988-2020 Free Software Foundation, Inc.
+   Copyright (C) 1988-2021 Free Software Foundation, Inc.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -117,18 +117,20 @@ described below.
 Tools/packages necessary for building GCC
 =========================================
 
-ISO C++98 compiler
-     Necessary to bootstrap GCC, although versions of GCC prior to 4.8
-     also allow bootstrapping with a ISO C89 compiler and versions of
-     GCC prior to 3.4 also allow bootstrapping with a traditional (K&R)
-     C compiler.
+ISO C++11 compiler
+     Necessary to bootstrap GCC.
+
+     Versions of GCC prior to 11 also allow bootstrapping with an ISO
+     C++98 compiler, versions of GCC prior to 4.8 also allow
+     bootstrapping with a ISO C89 compiler, and versions of GCC prior to
+     3.4 also allow bootstrapping with a traditional (K&R) C compiler.
 
      To build all languages in a cross-compiler or other configuration
      where 3-stage bootstrap is not performed, you need to start with an
-     existing GCC binary (version 3.4 or later) because source code for
+     existing GCC binary (version 4.8 or later) because source code for
      language frontends other than C might use GCC extensions.
 
-     Note that to bootstrap GCC with versions of GCC earlier than 3.4,
+     Note that to bootstrap GCC with versions of GCC earlier than 4.8,
      you may need to use '--disable-stage1-checking', though
      bootstrapping the compiler with such earlier compilers is strongly
      discouraged.
@@ -1023,6 +1025,32 @@ option.
           If '--with-multilib-list' is not given, then only 32-bit and
           64-bit run-time libraries will be enabled.
 
+'--with-multilib-generator=CONFIG'
+     Specify what multilibs to build.  CONFIG is a semicolon separated
+     list of values, possibly consisting of a single value.  Currently
+     only implemented for riscv*-*-elf*.  The accepted values and
+     meanings are given below.
+
+     Every config is constructed with four components: architecture
+     string, ABI, reuse rule with architecture string and reuse rule
+     with sub-extension.
+
+     Example 1: Add multi-lib suppport for rv32i with ilp32.
+          rv32i-ilp32--
+
+     Example 2: Add multi-lib suppport for rv32i with ilp32 and
+     rv32imafd with ilp32.
+          rv32i-ilp32--;rv32imafd-ilp32--
+
+     Example 3: Add multi-lib suppport for rv32i with ilp32; rv32im with
+     ilp32 and rv32ic with ilp32 will reuse this multi-lib set.
+          rv32i-ilp32-rv32im-c
+
+     Example 4: Add multi-lib suppport for rv64ima with lp64; rv64imaf
+     with lp64, rv64imac with lp64 and rv64imafc with lp64 will reuse
+     this multi-lib set.
+          rv64ima-lp64--f,c,fc
+
 '--with-endian=ENDIANS'
      Specify what endians to use.  Currently only implemented for
      sh*-*-*.
@@ -1291,6 +1319,15 @@ option.
      multiple languages at the same time, to avoid thrashing on build
      systems with limited free memory.  The default is not to use such a
      mutex.
+
+'--enable-link-serialization'
+     When building GCC, use make dependencies to serialize linking the
+     compilers for multiple languages, to avoid thrashing on build
+     systems with limited free memory.  The default is not to add such
+     dependencies and thus with parallel make potentially link different
+     compilers concurrently.  If the argument is a positive integer,
+     allow that number of concurrent link processes for the large
+     binaries.
 
 '--enable-maintainer-mode'
      The build rules that regenerate the Autoconf and Automake output
@@ -1617,7 +1654,7 @@ option.
      bootstrap.
 
      The 'valgrind' check requires the external 'valgrind' simulator,
-     available from <http://valgrind.org/>.  The 'rtl' checks are
+     available from <https://valgrind.org>.  The 'rtl' checks are
      expensive and the 'df', 'gcac' and 'valgrind' checks are very
      expensive.
 
@@ -1925,20 +1962,16 @@ option.
      paths PATH1, ..., PATHN.
 
           % SRCDIR/configure \
-              --enable-offload-targets=x86_64-intelmicemul-linux-gnu=/path/to/x86_64/compiler,nvptx-none,hsa
-
-     If 'hsa' is specified as one of the targets, the compiler will be
-     built with support for HSA GPU accelerators.  Because the same
-     compiler will emit the accelerator code, no path should be
-     specified.
+              --enable-offload-targets=x86_64-intelmicemul-linux-gnu=/path/to/x86_64/compiler,nvptx-none
 
 '--with-hsa-runtime=PATHNAME'
 '--with-hsa-runtime-include=PATHNAME'
 '--with-hsa-runtime-lib=PATHNAME'
 
-     If you configure GCC with HSA offloading but do not have the HSA
-     run-time library installed in a standard location then you can
-     explicitly specify the directory where they are installed.  The
+     If you configure GCC with offloading which uses an HSA run-time
+     such as AMDGCN but do not have the HSA run-time library installed
+     in a standard location then you can explicitly specify the
+     directory where they are installed.  The
      '--with-hsa-runtime=HSAINSTALLDIR' option is a shorthand for
      '--with-hsa-runtime-lib=HSAINSTALLDIR/lib' and
      '--with-hsa-runtime-include=HSAINSTALLDIR/include'.
@@ -1951,11 +1984,10 @@ option.
      '-fcf-protection' and, if needed, other target specific options to
      a set of building options.
 
-     The option is disabled by default.  When '--enable-cet=auto' is
-     used, it is enabled on Linux/x86 if target binutils supports 'Intel
-     CET' instructions and disabled otherwise.  In this case the target
-     libraries are configured to get additional '-fcf-protection'
-     option.
+     '--enable-cet=auto' is default.  CET is enabled on Linux/x86 if
+     target binutils supports 'Intel CET' instructions and disabled
+     otherwise.  In this case, the target libraries are configured to
+     get additional '-fcf-protection' option.
 
 '--with-riscv-attribute='yes', 'no' or 'default''
      Generate RISC-V attribute by default, in order to record extra
@@ -1963,6 +1995,17 @@ option.
 
      The option is disabled by default.  It is enabled on RISC-V/ELF
      (bare-metal) target if target binutils supported.
+
+'--enable-s390-excess-float-precision'
+'--disable-s390-excess-float-precision'
+     On s390(x) targets, enable treatment of float expressions with
+     double precision when in standards-compliant mode (e.g., when
+     '--std=c99' or '-fexcess-precision=standard' are given).
+
+     For a native build and cross compiles that have target headers, the
+     option's default is derived from glibc's behavior.  When glibc
+     clamps float_t to double, GCC follows and enables the option.  For
+     other cross compiles, the default is disabled.
 
 Cross-Compiler-Specific Options
 -------------------------------
@@ -2456,6 +2499,12 @@ configurations are:
      Compiles GCC itself using Address Sanitization in order to catch
      invalid memory accesses within the GCC code.
 
+'bootstrap-hwasan'
+     Compiles GCC itself using HWAddress Sanitization in order to catch
+     invalid memory accesses within the GCC code.  This option is only
+     available on AArch64 systems that are running Linux kernel version
+     5.4 or later.
+
 5.2 Building a cross compiler
 =============================
 
@@ -2592,7 +2641,8 @@ any front ends, you must download the testsuites separately.
    Second, you must have the testing tools installed.  This includes
 DejaGnu, Tcl, and Expect; the DejaGnu site has links to these.  For
 running the BRIG frontend tests, a tool to assemble the binary BRIGs
-from HSAIL text, HSAILasm must be installed.
+from HSAIL text, HSAILasm must be installed.  Some optional tests also
+require Python3 and pytest module.
 
    If the directories where 'runtest' and 'expect' were installed are
 not in the 'PATH', you may need to set the following environment
@@ -4819,7 +4869,7 @@ Concept Index
 * Menu:
 
 * Binaries:                              Binaries.           (line    6)
-* build_configargs:                      Configuration.      (line 1699)
+* build_configargs:                      Configuration.      (line 1740)
 * Configuration:                         Configuration.      (line    6)
 * configurations supported by GCC:       Configurations.     (line    6)
 * Downloading GCC:                       Downloading the source.
@@ -4829,7 +4879,7 @@ Concept Index
 * FDL, GNU Free Documentation License:   GNU Free Documentation License.
                                                              (line    6)
 * Host specific installation:            Specific.           (line    6)
-* host_configargs:                       Configuration.      (line 1703)
+* host_configargs:                       Configuration.      (line 1744)
 * Installing GCC: Binaries:              Binaries.           (line    6)
 * Installing GCC: Building:              Building.           (line    6)
 * Installing GCC: Configuration:         Configuration.      (line    6)
@@ -4839,7 +4889,7 @@ Concept Index
 * Specific installation notes:           Specific.           (line    6)
 * Target specific installation:          Specific.           (line    6)
 * Target specific installation notes:    Specific.           (line    6)
-* target_configargs:                     Configuration.      (line 1707)
+* target_configargs:                     Configuration.      (line 1748)
 * Testing:                               Testing.            (line    6)
 * Testsuite:                             Testing.            (line    6)
 
@@ -4849,105 +4899,105 @@ Tag Table:
 Node: Top1696
 Node: Installing GCC2254
 Node: Prerequisites3888
-Ref: GNAT-prerequisite5875
-Node: Downloading the source15487
-Node: Configuration17158
-Ref: with-gnu-as33246
-Ref: with-as34141
-Ref: with-gnu-ld35550
-Ref: WithAixSoname58229
-Ref: AixLdCommand58890
-Node: Building100321
-Node: Testing116190
-Node: Final install124077
-Node: Binaries129377
-Node: Specific130484
-Ref: aarch64-x-x130991
-Ref: alpha-x-x133011
-Ref: amd64-x-solaris2133225
-Ref: amdgcn-x-amdhsa133307
-Ref: arc-x-elf32133833
-Ref: arc-linux-uclibc134009
-Ref: arm-x-eabi134150
-Ref: avr134403
-Ref: bfin134984
-Ref: cr16135247
-Ref: cris135663
-Ref: dos136361
-Ref: epiphany-x-elf136684
-Ref: x-x-freebsd136789
-Ref: ft32-x-elf138589
-Ref: h8300-hms138687
-Ref: hppa-hp-hpux139039
-Ref: hppa-hp-hpux10141411
-Ref: hppa-hp-hpux11141824
-Ref: x-x-linux-gnu147226
-Ref: ix86-x-linux147419
-Ref: ix86-x-solaris2147732
-Ref: ia64-x-linux148808
-Ref: ia64-x-hpux149578
-Ref: x-ibm-aix150133
-Ref: TransferAixShobj153795
-Ref: iq2000-x-elf157605
-Ref: lm32-x-elf157745
-Ref: lm32-x-uclinux157849
-Ref: m32c-x-elf157977
-Ref: m32r-x-elf158079
-Ref: m68k-x-x158181
-Ref: m68k-x-uclinux159219
-Ref: microblaze-x-elf159464
-Ref: mips-x-x159583
-Ref: moxie-x-elf161493
-Ref: msp430-x-elf161540
-Ref: nds32le-x-elf162097
-Ref: nds32be-x-elf162169
-Ref: nvptx-x-none162238
-Ref: or1k-x-elf162801
-Ref: or1k-x-linux162932
-Ref: powerpc-x-x163013
-Ref: powerpc-x-darwin163204
-Ref: powerpc-x-elf163698
-Ref: powerpc-x-linux-gnu163783
-Ref: powerpc-x-netbsd163878
-Ref: powerpc-x-eabisim163966
-Ref: powerpc-x-eabi164092
-Ref: powerpcle-x-elf164168
-Ref: powerpcle-x-eabisim164260
-Ref: powerpcle-x-eabi164393
-Ref: rl78-x-elf164476
-Ref: riscv32-x-elf164582
-Ref: riscv32-x-linux164771
-Ref: riscv64-x-elf164928
-Ref: riscv64-x-linux165117
-Ref: rx-x-elf165274
-Ref: s390-x-linux165320
-Ref: s390x-x-linux165392
-Ref: s390x-ibm-tpf165479
-Ref: x-x-solaris2165610
-Ref: sparc-x-x168717
-Ref: sparc-sun-solaris2169219
-Ref: sparc-x-linux170362
-Ref: sparc64-x-solaris2170393
-Ref: sparcv9-x-solaris2171111
-Ref: c6x-x-x171198
-Ref: tilegx-*-linux171290
-Ref: tilegxbe-*-linux171432
-Ref: tilepro-*-linux171575
-Ref: visium-x-elf171696
-Ref: x-x-vxworks171804
-Ref: x86-64-x-x173327
-Ref: x86-64-x-solaris2173655
-Ref: xtensa-x-elf174305
-Ref: xtensa-x-linux174976
-Ref: windows175317
-Ref: x-x-cygwin177158
-Ref: x-x-mingw32177711
-Ref: older177937
-Ref: elf180054
-Node: Old180312
-Node: Configurations183445
-Node: GNU Free Documentation License186983
-Node: Concept Index212111
+Ref: GNAT-prerequisite5954
+Node: Downloading the source15566
+Node: Configuration17237
+Ref: with-gnu-as33325
+Ref: with-as34220
+Ref: with-gnu-ld35629
+Ref: WithAixSoname59796
+Ref: AixLdCommand60457
+Node: Building102210
+Node: Testing118333
+Node: Final install126281
+Node: Binaries131581
+Node: Specific132688
+Ref: aarch64-x-x133195
+Ref: alpha-x-x135215
+Ref: amd64-x-solaris2135429
+Ref: amdgcn-x-amdhsa135511
+Ref: arc-x-elf32136037
+Ref: arc-linux-uclibc136213
+Ref: arm-x-eabi136354
+Ref: avr136607
+Ref: bfin137188
+Ref: cr16137451
+Ref: cris137867
+Ref: dos138565
+Ref: epiphany-x-elf138888
+Ref: x-x-freebsd138993
+Ref: ft32-x-elf140793
+Ref: h8300-hms140891
+Ref: hppa-hp-hpux141243
+Ref: hppa-hp-hpux10143615
+Ref: hppa-hp-hpux11144028
+Ref: x-x-linux-gnu149430
+Ref: ix86-x-linux149623
+Ref: ix86-x-solaris2149936
+Ref: ia64-x-linux151012
+Ref: ia64-x-hpux151782
+Ref: x-ibm-aix152337
+Ref: TransferAixShobj155999
+Ref: iq2000-x-elf159809
+Ref: lm32-x-elf159949
+Ref: lm32-x-uclinux160053
+Ref: m32c-x-elf160181
+Ref: m32r-x-elf160283
+Ref: m68k-x-x160385
+Ref: m68k-x-uclinux161423
+Ref: microblaze-x-elf161668
+Ref: mips-x-x161787
+Ref: moxie-x-elf163697
+Ref: msp430-x-elf163744
+Ref: nds32le-x-elf164301
+Ref: nds32be-x-elf164373
+Ref: nvptx-x-none164442
+Ref: or1k-x-elf165005
+Ref: or1k-x-linux165136
+Ref: powerpc-x-x165217
+Ref: powerpc-x-darwin165408
+Ref: powerpc-x-elf165902
+Ref: powerpc-x-linux-gnu165987
+Ref: powerpc-x-netbsd166082
+Ref: powerpc-x-eabisim166170
+Ref: powerpc-x-eabi166296
+Ref: powerpcle-x-elf166372
+Ref: powerpcle-x-eabisim166464
+Ref: powerpcle-x-eabi166597
+Ref: rl78-x-elf166680
+Ref: riscv32-x-elf166786
+Ref: riscv32-x-linux166975
+Ref: riscv64-x-elf167132
+Ref: riscv64-x-linux167321
+Ref: rx-x-elf167478
+Ref: s390-x-linux167524
+Ref: s390x-x-linux167596
+Ref: s390x-ibm-tpf167683
+Ref: x-x-solaris2167814
+Ref: sparc-x-x170921
+Ref: sparc-sun-solaris2171423
+Ref: sparc-x-linux172566
+Ref: sparc64-x-solaris2172597
+Ref: sparcv9-x-solaris2173315
+Ref: c6x-x-x173402
+Ref: tilegx-*-linux173494
+Ref: tilegxbe-*-linux173636
+Ref: tilepro-*-linux173779
+Ref: visium-x-elf173900
+Ref: x-x-vxworks174008
+Ref: x86-64-x-x175531
+Ref: x86-64-x-solaris2175859
+Ref: xtensa-x-elf176509
+Ref: xtensa-x-linux177180
+Ref: windows177521
+Ref: x-x-cygwin179362
+Ref: x-x-mingw32179915
+Ref: older180141
+Ref: elf182258
+Node: Old182516
+Node: Configurations185649
+Node: GNU Free Documentation License189187
+Node: Concept Index214315
 
 End Tag Table
 
